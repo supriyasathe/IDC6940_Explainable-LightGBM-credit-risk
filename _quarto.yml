@@ -1,5 +1,10 @@
 project:
   type: website
+  render:
+    - index.qmd
+    - report.qmd
+    - literature.qmd
+    - about.qmd
 
 website:
   title: "LightGBM Agentic AI Credit Risk"
@@ -24,4 +29,4 @@ format:
     css: styles.css
     toc: true
 
-csl: apa-numeric-superscript-brackets.csl 
+csl: apa-numeric-superscript-brackets.csl

@@ -1,8 +1,14 @@
 ---
-title: "Explainable Agentic AI for Credit Risk Assessment using LightGBM"
+title: "Agentic AI for Credit Risk Assessment using LightGBM"
 author:
   - name: "Supriya Sathe (Advisor: Dr. Cohen)"
     url: https://github.com/supriyasathe
+
+format:
+  html:
+    mathjax: true
+    theme: lightly
+
 bibliography: references.bib
 link-citations: true
 ---
@@ -34,9 +40,50 @@ The objective of this study is to show how explainable artificial intelligence c
 
 ## 2. Methods
 
+### 2.1 Data Preprocessing
+First, preprocessing is for the dataset that includes borrower demographic details, financial level, and credit history characteristics. To utilize statistical robustness and lessen vulnerability to extreme values, missing numerical data are handled via median imputation. One-hot encoding is used to convert categorical variables into numerical representation so that gradient boosting calculation can use them for prediction.
 
+### 2.2 LightGBM Architecture for Credit Risk Prediction
 
----
+This reasearch uses Light Gradient Boosting Machine (LightGBM) to predict the possibility of loan defaulter's based on borrower charactestics like, how much they are earning, employment history, how much load amount and history of credit. LightGBM is an really efficient as a boosting framework to make decision making tress sequentially to get accurate predictiona and reduce the errors in the prediction.
+
+The above function is optimized by the LightGBM model:
+
+$$
+\text{Obj}(t)=
+\sum_{i=1}^{n}
+l\left(
+y_i,
+\hat{y}_i^{(t-1)} + f_t(x_i)
+\right)
++\Omega(f_t)
+$$
+
+𝑦𝑖 indicates if the loan is in default or not. (default or non-default)
+
+𝑦^i(t−1) is the value expected from the earlier loop.
+
+𝑓𝑡(𝑥𝑖) shows the new decision tree that was added after iteration 
+
+l(⋅) represent the binary cross-entropy value for classifier loss function.
+
+Ω(ft) is the normalization idea that keeps excessive fitting from developing.
+
+### 2.3 LightGBM Model Implementation 
+
+### 2.4 Explainable Agentic AI Framework
+An explainable agentic reasoning loop develop on the observe-reason-act model has been integrated with the system. The agent develops understandable explanations which is human-readable for credit risk evaluation through evaluating significant variables and observing predictive model outcomes through system.
+
+The cycle of agentic reasoning is stated as:
+
+Observation → Reasoning→ Decision → Explanation
+
+To provide relevant risk assessment, the framework analyzes borrower some characteristics such as financial status, credit amount, background in employment, and credit history.
+
+### 2.5 Model Training and Evaluation
+This study spliting the dataset into training and testing subsets using stratified sampling and it keeps the balance of class classification. Gradient boosting iterations with optimized hyperparameters, such as learning rate and number of leaves, are used to train the model.
+
+To guarantee dependable classification performance, model performance is assessed using ROC-AUC score, precision, recall, F1-score, and confusion matrix analysis.
 
 ## 3. Analysis and Results
 
@@ -44,16 +91,38 @@ The objective of this study is to show how explainable artificial intelligence c
 
 #### 3.1.1 Data Description :
 
-The Credit Risk Dataset, which includes 32,581 borrower records and 12 characteristics pertaining to financial, credit history, and demographic data, is used in this study. Binary in nature, the target variable loan_status indicates whether a borrower is likely to default (1) or not (0). Income, loan amount, interest rate, length of employment, home ownership status, and loan purpose are among the numerical and qualitative variables included in the dataset. Its reasonable size and realistic structure make it ideal for using LightGBM and assessing explainable, agentic AI decision-making in credit risk prediction.
+The present research is using the Credit Risk Dataset, which contains 32,581 borrower records and twelve variables related to financial, credit history, and demographic details. A borrower's likelihood of defaulting (1) or not (0) is indicated by the binary target variable loan_status. The dataset includes both quantitative and qualitative factors, including income, loan amount, interest rate, length of work, home ownership status, and loan purpose. It is perfect for applying LightGBM and evaluating explainable, agentic AI decision-making in credit risk prediction due to its realistic structure and suitable size.
 
-##### Dataset Dimensions -
+
+
+| Feature | Count | Unique | Top | Freq | Mean | Std Dev | Min | 25% | 50% | 75% | Max |
+|----------|--------|--------|------|------|--------|---------|------|------|------|------|------|
+| person_age | 32581 | – | – | – | 27.73 | 6.35 | 20 | 23 | 26 | 30 | 144 |
+| person_income | 32581 | – | – | – | 66074.85 | 61983.12 | 4000 | 38500 | 55000 | 79200 | 6000000 |
+| person_home_ownership | 32581 | 4 | RENT | 16446 | – | – | – | – | – | – | – |
+| person_emp_length | 31686 | – | – | – | 4.79 | 4.14 | 0 | 2 | 4 | 7 | 123 |
+| loan_intent | 32581 | 6 | EDUCATION | 6453 | – | – | – | – | – | – | – |
+| loan_grade | 32581 | 7 | A | 10777 | – | – | – | – | – | – | – |
+| loan_amnt | 32581 | – | – | – | 9589.37 | 6322.09 | 500 | 5000 | 8000 | 12200 | 35000 |
+| loan_int_rate | 29465 | – | – | – | 11.01 | 3.24 | 5.42 | 7.90 | 10.99 | 13.47 | 23.22 |
+| loan_status | 32581 | – | – | – | 0.22 | 0.41 | 0 | 0 | 0 | 0 | 1 |
+| loan_percent_income | 32581 | – | – | – | 0.17 | 0.11 | 0.00 | 0.09 | 0.15 | 0.23 | 0.83 |
+| cb_person_default_on_file | 32581 | 2 | N | 26836 | – | – | – | – | – | – | – |
+| cb_person_cred_hist_length | 32581 | – | – | – | 5.80 | 4.06 | 2 | 3 | 4 | 8 | 30 |
+
+
+
+
+
+**Dataset Dimensions** -
+
 Observations (rows): 32,581
 
 Features (columns): 12
 
 Target Variable: loan_status
 
-##### Target Variable -
+**Target Variable** -
 
 loan_status
 
@@ -99,7 +168,16 @@ credit1 = pd.read_csv(credit_path)
 #### 3.1.3 Summary Statistics :
 
 ```{python}
-credit1.describe()
+import pandas as pd
+
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+
+credit1.describe(include='all')
+# credit1.columns
+
+# for col in credit1.columns:
+#     print(col)
 ```
 
 For a more thorough summary:
@@ -124,12 +202,10 @@ Complete data is present in all other variables.
 
 Preprocessing will use median imputation to handle these missing values in order to maintain the robustness of the distribution.
 
+
 #### 3.1.5 Target Distribution :
 
-
-
-
-Import the project dependencies
+Import the project dependencies (Libraries)
 
 <!-- This code chunk is loading all libraries being used in the project. -->
 
@@ -147,8 +223,83 @@ lapply(packages, library, character.only = TRUE)
 set.seed(123)
 ```
 
+Here, I analyze target variable loan_status To show the distribution of default and non-default loan cases in the used dataset. I use value_counts() function to calculate the frequency counts and percentage percentages of each class using Python's Panda library. 
+The Matplotlib Python's library uses to create a bar chart that depicted the count of borrowers who were in default and non-default list. This study analysis gives insight into the overall credit risk pattern and helps with appropriate model evaluation metrics and training decision-making.
 
-### 3.1. Data Ingestion
+```{python}
+#| code-fold: true
+#| echo: false
+import matplotlib.pyplot as plt
+
+# Target Distribution
+
+target_counts = credit1['loan_status'].value_counts()
+print("Target Counts:\n", target_counts)
+
+target_percentage = credit1['loan_status'].value_counts(normalize=True) * 100
+print("\nTarget Percentage:\n", target_percentage)
+
+plt.figure()
+credit1['loan_status'].value_counts().plot(kind='bar')
+plt.title("Target Distribution (Loan Status)")
+plt.xlabel("Loan Status (0 = Non-default, 1 = Default)")
+plt.ylabel("Count")
+plt.xticks(rotation=0)
+plt.show()
+```
+
+```{python}
+#| code-fold: true
+#| echo: false
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Load dataset inside Python environment
+credit1 = pd.read_csv("datasets/credit_risk_dataset.csv")
+plt.figure()
+plt.hist(credit1['loan_amnt'], bins=30)
+plt.title("Loan Amount Distribution")
+plt.xlabel("Loan Amount")
+plt.ylabel("Frequency")
+plt.show()
+
+
+```
+
+
+```{python}
+#| code-fold: true
+#| echo: false
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load dataset inside Python chunk
+credit1 = pd.read_csv("datasets/credit_risk_dataset.csv")
+
+# Select numeric variables only
+numeric_df = credit1.select_dtypes(include=['number'])
+
+# Compute correlation matrix
+corr_matrix = numeric_df.corr()
+
+# Plot heatmap using matplotlib
+plt.figure(figsize=(8,6))
+plt.imshow(corr_matrix, interpolation='nearest')
+
+plt.colorbar()
+plt.title("Correlation Heatmap")
+
+# Add axis labels
+plt.xticks(range(len(corr_matrix.columns)), corr_matrix.columns, rotation=90)
+plt.yticks(range(len(corr_matrix.columns)), corr_matrix.columns)
+
+plt.tight_layout()
+plt.show()
+```
+
+
+
+u### 3.1. Data Ingestion
 
 This code chunk is importing the dataset from the folder datasets which it is finding at the root of the github repo and it is concatenating the path to run the function read_csv from tidyverse.
 
@@ -180,7 +331,7 @@ head(credit1)
 colSums(is.na(credit1))
 ```
 
-we found that:
+I found that:
 
 - person_emp_length has 895 NA values
 - loan_int_rate has 3116 NA values
@@ -236,32 +387,11 @@ from skimpy import skim
 skim(credit1)
 ```
 
-```{python}
-#| label: fig-polar
-#| fig-cap: "A line plot on a polar axis"
-
-import numpy as np
-import matplotlib.pyplot as plt
-
-r = np.arange(0, 2, 0.01)
-theta = 2 * np.pi * r
-fig, ax = plt.subplots(
-  subplot_kw = {'projection': 'polar'} 
-)
-ax.plot(theta, r)
-ax.set_rticks([0.5, 1, 1.5, 2])
-ax.grid(True)
-plt.show()
-```
-
----
 
 ## 4. Conclusion
 
 
----
-
-### References
+## 5. References
 
 ::: {#refs}
 :::
