@@ -49,6 +49,7 @@ This reasearch uses Light Gradient Boosting Machine (LightGBM) to predict the po
 
 The above function is optimized by the LightGBM model:
 
+
 $$
 \text{Obj}(t)=
 \sum_{i=1}^{n}
