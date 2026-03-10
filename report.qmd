@@ -1,5 +1,5 @@
 ---
-title: "Agentic AI for Credit Risk Assessment using LightGBM"
+title: "Explainable Credit Risk Assessment using LightGBM"
 author:
   - name: "Supriya Sathe (Advisor: Dr. Cohen)"
     url: https://github.com/supriyasathe
@@ -16,124 +16,104 @@ link-citations: true
 
 ## 1. Introduction
 
-Evaluation of credit risk is vital for the financial services industry because, it is required to  avoid risks and maintain compliance with regulations, organizations have to accurately predict a borrower's likelihood of failure while re-payment. Because they are straightforward and easy to understand for anyone, typical evaluation methods like systems based on rules and regression analysis have been often used in AI world. Modern advancement in machine learning, although have shown that the hierarchical (structural) financial data can now be predicted with significant advantages.
+Evaluation of credit risk is vital for the financial services industry because, it is required to avoid risks and maintain compliance with regulations, organizations have to accurately predict a borrower's likelihood of failure while re-payment. Typically, the financial institutions have uses methods statistical and rule-based techniques such as logistic regression, scoreboards, and rule-driven decision systems to assess credit score. These traditional methods are in use because those are comparatively clear, simple and easy to predict to stakeholders. Although, typical approaches are difficult to handle data processing in big and multilevel credit dataset. The latest development in machine learning has majorly enhance the capacity to evaluate organized financial data and generate more easy and precise interpretations. Nonlinear patterns and interactions between components that traditional statistical methods can be ignore or  get using machine learning models. In addition to this, the banking sector is going away from complex rule-based frameworks for evaluating credit score to latest improved machine learning  and toward more advanced machine learning systems that provide improved accuracy for prediction (Shreya & Pathak, 2025) @shreya2025explainableartificialintelligencecredit. So, these models are able to provide organizations to effectively analyze enormous quantities of statistical data and provide forecasting of probability of lenders defaulting credit score. 
 
-The Risk of default Assessment, which measures a lender's probability count of defaulting lenders,  it is an important aspect of organizational stability in the technological current days in financial environment. The industry has already started moving from restrictive rule-wise structures to complicated Machine Learning (ML) architectures, as stated by Shreya and Pathak (2025) @shreya2025explainableartificialintelligencecredit. Although the fact is these models provide past unheard-of precision in forecasting, they are frequently addressed to as "black boxes." The paper uses Explainable Artificial Intelligence (XAI) to overcome the visibility gap and LightGBM to develop a robust credit assessment engine.
+Many machine learning models are frequently getting attacked for being inaccessible even though having their predictive benefits. Because the in built decision-making system is hard to understand, complex algorithms like deep learning models and collective learning techniques are often referred to as "black box" mechanism. This lack of interpretability poses significant problems in highly regulated industries like banking and finance. So the majorly regulated organizations like financial services and banking  get into vital issues due to absence of predictability in the process. Nowadays, there is a need  for financial organizations have to ensure integrity in borrowing processes and offer explanations for automatic verdicts. According to Bussmann et al. (2020) @bussmann2021explainable, explainability is crucial for credit risk management as companies need to be able to explain and give the exact justification model predictions to stakeholders, consumers, and regulators. Similarly, de Lange et al. (2022) @de2022explainable emphasize in his paper the meaning of the "right to explanation," which allows organizations to provide comprehensible explanations for machine credit assessments.
 
-According to author de Lange et al. (2022) @de2022explainable and Bussmann et al. (2020) @bussmann2021explainable, financial businesses should offer a “Right to justification” as a way to make sure that risk management is the responsibility for both moral and verifiable. This flexibility is not just a technical preference in organization the but also a legal need. In a similar vein, de Lange et al. (2022) @de2022explainable demonstrate that explainable AI methods can maintain accurate predictions while working on to improve an  accessibility in financial systems nowadays. The significance of combining  the both concepts explainable machine learning with business analytics for ethical evaluation of credit risk defaulters have been demonstrated by recent studies by Shreya and Pathak (2025) @shreya2025explainableartificialintelligencecredit and Oyeyemi et al. (2025) @oyeyemiexplainable.
+Nowadays, Explainable Artificial Intelligence (XAI) approaches are extensively used by working professionals  and researchers  mainly to improve the easy accessibility of machine learning models for to overcome this obstacles. The goal of explainable  methods is to give insights on how models provide results while ensuring high accuracy in forecasting. Oyeyemi et al. (2025) @oyeyemiexplainable claim that by combining explainable AI method with machine learning models, businesses can make an algorithm that are precise and easy to understand, boosting confidence in digital automatic economic decision-making system. Additionally,  recent research also shows the how artificial intelligence in advancing help credit decisions-making process with their developing role for different financial  organizations across the globe. In one example, McKinsey & Company (2025) @Nuzzo_Kremer_Tavakol_Harreis describes how AI-driven solutions are transforming the entire credit process by improving automatic decision-making and more efficient data analysis. In a similar vein, Kubam (2024) @kubam2025agentic focuses attention to new cognitive credit assessment platforms that allow for real-time decision-making about finances by merging technology with comprehension. So, these modern advancements indicates how credit risk management techniques plays vital role in bringing together straight decision structures with complex data assess technology for today. 
 
-Here are the important steps to develop a machine learning-based credit risk model to build overall good performance:
+In this study, the Light Gradient Boosting Machine (LightGBM) algorithm uses to create an explainable credit risk assessment system. LightGBM is a dynamic gradient boosting method that is now commonly used in machine learning applications because of it has excellent predictive accuracy, adaptability, as well as efficiency when dealing with hierarchical datasets. The approched model is applies to a credit risk dataset that includes customer income, history of credit, and demographic information such as address and travel. It is built in Python. The main goals are of this model is predicting the possibility of defaulters who are failing to pay loans and  highlighting the important factors which are affecting on credit risk result. 
 
-1.	The first is collecting and preparing the data, including the encrypting variables with categories and finding the missing values.
-2.	Dividing the dataset into two subsets for testing and training.
-3.	Applying the training data to train for the LightGBM classifier.
-4.	Assessing predictive performance for the the model with metrics like ROC-AUC, accuracy, precision, recall, and F1-score.
-5.	Utilizing SHAP-based explanation and characteristic significance for analyzing the model forecasts.
+This research uses SHAP (SHapley Additive Explanations), an explainable method that evaluates each feature's role in contribution to the model result outcome in order to evaluate machine learning projections and improve model accessibility. Here the benefit of SHAP are both local interpretability, which explains particular forecasts, and global interpretability, which explains overall characteristic significance throughout the dataset. The suggested structure is for both exact credit risk forecasting and insightful statistical model analysis by integrating LightGBM with SHAP explanations methods.The recommended credit risk evaluation methodology has some important steps. The dataset is initially collect and preprocess by encoding category variables then handling with missing values. Secondly, to assess prediction performance, later the dataset is split into training and testing subsets. After that, the collected training data is utilized to train the LightGBM classification. Fourth, there are various metrics including accuracy, precision, recall, F1-score, and ROC-AUC are used to determine the model's forecasting ability for the dataset. For the purpose to assess the forecasts of models and determine the most important variables impacting credit risk, SHAP-based explanations are finally use.
 
-This method provides that the model is easy to understand, versatile, and trustworthy. The predictive model's accuracy on unidentified information is determined using model evaluation approaches including cross-validity and train-test partitioning.
-
-This project is using the Light Gradient Boosting Machine (LightGBM) programmed in Python langauge to create an Explainable Credit Risk Assessment system, driven by major breakthroughs in both research and business. LightGBM is determined because it performs well on structured table type datasets and is effective and versatile way. The Credit Risk Dataset's consumer demographic details, banking, and credit historical information will be used by the algorithm to forecast defaults listing on loans potential. Explainable methods like SHAP will be used to understand both specific and worldwide projections in order to assure integrity and transperency.
-
-The objective of this study is to show how explainable artificial intelligence concepts may be integrated with efficient boosting algorithms to create precise, accessible, and insightful credit risk evaluation solutions to avoid the losses of financial organization.
+The objective of this research is to show how new advanced algorithms can work for machine learning  and can merge with explainable  methodologies to generate efficient, transparent, and consistent credit risk assessment solutions for the system. The suggested model intends to improve transparency of making decisions and aid the banking area in better comprehending the variables influencing customers credit of default by bringing the accessibility that comes from SHAP with the ability to forecast of LightGBM model.
 
 ---
 
 ## 2. Methods
 
-### 2.1 Data Preprocessing
-First, preprocessing is for the dataset that includes borrower demographic details, financial level, and credit history characteristics. To utilize statistical robustness and lessen vulnerability to extreme values, missing numerical data are handled via median imputation. One-hot encoding is used to convert categorical variables into numerical representation so that gradient boosting calculation can use them for prediction.
+### 2.1 Mathematical Fundamentals
 
-### 2.2 LightGBM Architecture for Credit Risk Prediction
+#### 2.1.1 Formulation of Binary Classification :
+Predicting if a borrower will fail to repay on a loan is an issue of binary classification that can be used to generate credit risk prediction. Suppose that the dataset is defined as where each observation $(x_i, y_i)$
+has a feature vector $(x_i)$ and a target label $y_i \in \{0, 1\}$ representing low or high risk (Default/Non-default). 
+The predicted probability of default is:
+$$\hat{y}_i = P(y_i = 1 | x_i)$$
 
-This reasearch uses Light Gradient Boosting Machine (LightGBM) to predict the possibility of loan defaulter's based on borrower charactestics like, how much they are earning, employment history, how much load amount and history of credit. LightGBM is an really efficient as a boosting framework to make decision making tress sequentially to get accurate predictiona and reduce the errors in the prediction.
+#### 2.1.2 Gradient Boosting Model Equation :
+In this study predictive model is use based on gradient boosting and uses LightGBM in its implementation. To boost the precision of forecasts, the model integrates many decision trees:
+$$f(x) = \sum_{k=1}^{K} f_k(x)$$
 
-The above function is optimized by the LightGBM model:
+where $f_k(x)$ indicates the projection from the k-th decision tree.
 
+#### 2.1.3 LightGBM Purpose Function :
+LightGBM optimizes tree-based models by eliminating both regularization and loss:
+$$\mathcal{L} = \sum_{i=1}^{n} l(y_i, \hat{y}_i) + \Omega(f)$$
 
+where , $l(y_i, \hat{y}_i)$ is the loss function here and $\Omega(f)$ is a regularization term that controls the level of complexity of the model.
+
+#### 2.1.4 SHAP Explainability Equation :
+This study applies SHAP values from collaborative game theory for analyzing the model predictions. Each characteristic is given a significance evaluation by SHAP that shows how much it contributes to the prediction.
+The final prediction can be written as:
+$$f(x) = \phi_0 + \sum_{j=1}^{p} \phi_j$$
+
+where, $\phi_j$ shows how feature 𝑗 contributed to the prediction.
+
+### 2.2 Assumptions 
+This study focuses on the dataset's $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^{n}$ exact representation of borrowers demographic and financial details that are important to credit risk prediction. Here $x_i \in \mathbb{R}^p$ is shows borrower characteristics and $y_i \in \{0, 1\}$ indicates the status of a loan.
+
+<br>
+Perhaps the conditional likelihood $P(y=1|x)$ can be calculated using machine learning models like LightGBM, Random Forest, and Logistic Regression. It is assumed this characteristic parameters have little multicollinearity as well as significant associations with the target variable.
+
+<br>
+The corresponding function is obtained by the models $f(x): \mathcal{X} \to \mathcal{Y}$ that minimizes a loss function $L(y, f(x))$ during model training.
+
+<br>
+Finally, SHAP values $\phi_i$ are considered to give insightful explanations by calculating each characteristic's influence to the model's predictions.
+
+### 2.3 Model Evaluation Metrics 
+This study use a variety of evaluation parameters to develope the unbalanced financial information to evaluate the LightGBM classification accuracy on this credit risk dataset. These measures give multiple perspectives of model performance because a negative outcome (being unable to identify a defaulting borrower) is much more expensive for a bank than an inaccurate positive.
+
+#### 2.3.1 Accuracy 
+The proportion of accurately expected instances to all instances is called accuracy. For this dataset, a "dumb" model that predicts "No Default" for all individuals would however obtain accuracy, given its appealing nature.
 $$
-\text{Obj}(t)=
-\sum_{i=1}^{n}
-l\left(
-y_i,
-\hat{y}_i^{(t-1)} + f_t(x_i)
-\right)
-+\Omega(f_t)
+\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
 $$
 
-𝑦𝑖 indicates if the loan is in default or not. (default or non-default)
+#### 2.3.2 Recall (Sensitivity)
+For this study, recall is an important statistic. It evaluates how well the model can find every possible defaulting member. High recall assures that the model identifies the highest percentage of instances of high risk for our dataset, where the "Default" category is the low-risk.
+$$
+\text{Recall} = \frac{TP}{TP + FN}
+$$
 
-𝑦^i(t−1) is the value expected from the earlier loop.
+#### 2.3.3 Precision
+Precision in credit risk relates to the percentage of expected defaults that really occurred. High accuracy maintains relationships with clients sustained by avoiding the bank from prematurely rejecting credit to "secure" borrowers.
+$$
+\text{Precision} = \frac{TP}{TP + FP}
+$$
 
-𝑓𝑡(𝑥𝑖) shows the new decision tree that was added after iteration 
+#### 2.3.4 F1-Score
+Precision and recall's harmonic median is the F1-Score. It presents an equal compromise between the two, which is important considering the conflict between ignoring inadequate credit (Recall) and refusing outstanding ones (Precision).
+$$
+F_1 = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+$$
 
-l(⋅) represent the binary cross-entropy value for classifier loss function.
+#### 2.3.5 ROC-AUC
+The model's capacity to classify between classes over all potential thresholds is by the Area Under the Receiver Operating Features Curve (ROC-AUC). The model uses particular likelihood threshold used, a high ROC-AUC (e.g., $> 0.90$) in this credit assessment shows that the model is efficient at rating a random defaulting customer higher than a random non-defaulter.
 
-Ω(ft) is the normalization idea that keeps excessive fitting from developing.
 
-### 2.3 LightGBM Model Implementation 
+### 2.4 LightGBM Model Implementation in Python 
 
-### 2.4 Explainable Agentic AI Framework
-An explainable agentic reasoning loop develop on the observe-reason-act model has been integrated with the system. The agent develops understandable explanations which is human-readable for credit risk evaluation through evaluating significant variables and observing predictive model outcomes through system.
+#### 2.4.1 Hyperparameter Selection : 
 
-The cycle of agentic reasoning is stated as:
+#### 2.4.2 SHAP Integration :
 
-Observation → Reasoning→ Decision → Explanation
-
-To provide relevant risk assessment, the framework analyzes borrower some characteristics such as financial status, credit amount, background in employment, and credit history.
-
-### 2.5 Model Training and Evaluation
-This study spliting the dataset into training and testing subsets using stratified sampling and it keeps the balance of class classification. Gradient boosting iterations with optimized hyperparameters, such as learning rate and number of leaves, are used to train the model.
-
-To guarantee dependable classification performance, model performance is assessed using ROC-AUC score, precision, recall, F1-score, and confusion matrix analysis.
 
 ## 3. Analysis and Results
+### 3.1 Data Ingestion :
 
-### 3.1 Exploratory Data Analysis (EDA) : 
-
-#### 3.1.1 Data Description :
-
-The present research is using the Credit Risk Dataset, which contains 32,581 borrower records and twelve variables related to financial, credit history, and demographic details. A borrower's likelihood of defaulting (1) or not (0) is indicated by the binary target variable loan_status. The dataset includes both quantitative and qualitative factors, including income, loan amount, interest rate, length of work, home ownership status, and loan purpose. It is perfect for applying LightGBM and evaluating explainable, agentic AI decision-making in credit risk prediction due to its realistic structure and suitable size.
-
-
-
-| Feature | Count | Unique | Top | Freq | Mean | Std Dev | Min | 25% | 50% | 75% | Max |
-|----------|--------|--------|------|------|--------|---------|------|------|------|------|------|
-| person_age | 32581 | – | – | – | 27.73 | 6.35 | 20 | 23 | 26 | 30 | 144 |
-| person_income | 32581 | – | – | – | 66074.85 | 61983.12 | 4000 | 38500 | 55000 | 79200 | 6000000 |
-| person_home_ownership | 32581 | 4 | RENT | 16446 | – | – | – | – | – | – | – |
-| person_emp_length | 31686 | – | – | – | 4.79 | 4.14 | 0 | 2 | 4 | 7 | 123 |
-| loan_intent | 32581 | 6 | EDUCATION | 6453 | – | – | – | – | – | – | – |
-| loan_grade | 32581 | 7 | A | 10777 | – | – | – | – | – | – | – |
-| loan_amnt | 32581 | – | – | – | 9589.37 | 6322.09 | 500 | 5000 | 8000 | 12200 | 35000 |
-| loan_int_rate | 29465 | – | – | – | 11.01 | 3.24 | 5.42 | 7.90 | 10.99 | 13.47 | 23.22 |
-| loan_status | 32581 | – | – | – | 0.22 | 0.41 | 0 | 0 | 0 | 0 | 1 |
-| loan_percent_income | 32581 | – | – | – | 0.17 | 0.11 | 0.00 | 0.09 | 0.15 | 0.23 | 0.83 |
-| cb_person_default_on_file | 32581 | 2 | N | 26836 | – | – | – | – | – | – | – |
-| cb_person_cred_hist_length | 32581 | – | – | – | 5.80 | 4.06 | 2 | 3 | 4 | 8 | 30 |
-
-
-
-
-
-**Dataset Dimensions** -
-
-Observations (rows): 32,581
-
-Features (columns): 12
-
-Target Variable: loan_status
-
-**Target Variable** -
-
-loan_status
-
-1 = High Risk (Default)
-
-0 = Low Risk (Non-Default)
-
-#### 3.1.2 Data Ingestion (Python) :
-
-The pandas package in Python was used to load the dataset. A dataframe called credit1 was created by reading the file credit_risk_dataset.csv. The dataset was first explored by examining column data types, previewing the first few records, and determining its dimensions. To guarantee effective ingestion and comprehend variable composition, the dataset structure was validated using the.shape(),.head(), and.info() functions.
+The pandas package in Python was used to load the dataset and skimpy package is to get consice exploratory summeries. A dataframe called credit1 was created by reading the file credit_risk_dataset .csv. The dataset was first explored by examining column data types, previewing the first few records, data analysis and determining its dimensions. 
+To guarantee effective ingestion and comprehend variable composition, the dataset structure was validated using the .shape(), .head(), and.info() functions.
 
 ```{python}
 #| code-fold: true
@@ -166,107 +146,285 @@ credit_path = os.path.join(datasets_path, "credit_risk_dataset.csv")
 credit1 = pd.read_csv(credit_path)
 ```
 
-#### 3.1.3 Summary Statistics :
 
-```{python}
-import pandas as pd
+### 3.2 Data Description :
 
-pd.set_option('display.max_columns', None)
-pd.set_option('display.width', None)
-
-credit1.describe(include='all')
-# credit1.columns
-
-# for col in credit1.columns:
-#     print(col)
-```
-
-For a more thorough summary:
-
-```{python}
-#| code-fold: true
-from skimpy import skim
-skim(credit1)
-```
-
-#### 3.1.4 Missing Value Analysis :
-
-```{python}
-credit1.isna().sum()
-```
-
-person_emp_length → 895 missing values
-
-loan_int_rate → 3,116 missing values
-
-Complete data is present in all other variables.
-
-Preprocessing will use median imputation to handle these missing values in order to maintain the robustness of the distribution.
+This project research is using the Credit Risk Dataset, which contains 32,581 borrower records and twelve variables related to financial, credit history, and demographic details. A borrower's likelihood of defaulting (1) or not (0) is indicated by the binary target variable loan_status. The dataset includes both quantitative and qualitative factors, including income, loan amount, interest rate, length of work, home ownership status, and loan purpose. It is perfect for applying LightGBM and evaluating explainable.
 
 
-#### 3.1.5 Target Distribution :
+| Feature | Count | Unique | Top | Freq | Mean | Std Dev | Min | 25% | 50% | 75% | Max |
+|----------|--------|--------|------|------|--------|---------|------|------|------|------|------|
+| person_age | 32581 | – | – | – | 27.73 | 6.35 | 20 | 23 | 26 | 30 | 144 |
+| person_income | 32581 | – | – | – | 66074.85 | 61983.12 | 4000 | 38500 | 55000 | 79200 | 6000000 |
+| person_home_ownership | 32581 | 4 | RENT | 16446 | – | – | – | – | – | – | – |
+| person_emp_length | 31686 | – | – | – | 4.79 | 4.14 | 0 | 2 | 4 | 7 | 123 |
+| loan_intent | 32581 | 6 | EDUCATION | 6453 | – | – | – | – | – | – | – |
+| loan_grade | 32581 | 7 | A | 10777 | – | – | – | – | – | – | – |
+| loan_amnt | 32581 | – | – | – | 9589.37 | 6322.09 | 500 | 5000 | 8000 | 12200 | 35000 |
+| loan_int_rate | 29465 | – | – | – | 11.01 | 3.24 | 5.42 | 7.90 | 10.99 | 13.47 | 23.22 |
+| loan_status | 32581 | – | – | – | 0.22 | 0.41 | 0 | 0 | 0 | 0 | 1 |
+| loan_percent_income | 32581 | – | – | – | 0.17 | 0.11 | 0.00 | 0.09 | 0.15 | 0.23 | 0.83 |
+| cb_person_default_on_file | 32581 | 2 | N | 26836 | – | – | – | – | – | – | – |
+| cb_person_cred_hist_length | 32581 | – | – | – | 5.80 | 4.06 | 2 | 3 | 4 | 8 | 30 |
 
-Import the project dependencies (Libraries)
+<br>
+**Dataset Dimensions** -
+<br>
 
-<!-- This code chunk is loading all libraries being used in the project. -->
+<table style="border-collapse: collapse; width: 60%; border: 1px solid black;">
+<tr>
+    <th style="border: 1px solid black; padding: 8px; text-align: left;">Attribute</th>
+    <th style="border: 1px solid black; padding: 8px; text-align: left;">Details</th>
+</tr>
 
+<tr>
+    <td style="border: 1px solid black; padding: 8px;">Observations (Rows)</td>
+    <td style="border: 1px solid black; padding: 8px;">32,581</td>
+</tr>
+
+<tr>
+    <td style="border: 1px solid black; padding: 8px;">Features (Columns)</td>
+    <td style="border: 1px solid black; padding: 8px;">12</td>
+</tr>
+
+<tr>
+    <td style="border: 1px solid black; padding: 8px;">Target Variable</td>
+    <td style="border: 1px solid black; padding: 8px;">`loan_status`</td>
+</tr>
+
+</table>
+
+<br>
+**Target Variable** -
+<br>
+
+<table style="border-collapse: collapse; width: 50%; border: 1px solid black;">
+<tr>
+    <th style="border: 1px solid black; padding: 8px; text-align: left;">Class Value (`loan_status`) </th>
+    <th style="border: 1px solid black; padding: 8px; text-align: left;">Description</th>
+</tr>
+
+<tr>
+    <td style="border: 1px solid black; padding: 8px;">1</td>
+    <td style="border: 1px solid black; padding: 8px;">High Risk (Default)</td>
+</tr>
+
+<tr>
+    <td style="border: 1px solid black; padding: 8px;">0</td>
+    <td style="border: 1px solid black; padding: 8px;">Low Risk (Non-Default)</td>
+</tr>
+
+</table>
+
+### 3.3 Packages :
 ```{r}
+#| label: load-r-packages
 #| code-fold: true
 #| message: false
 #| warning: false
-#| output: false
+#| results: asis
 
 packages <- c("tidyverse", "skimr", "knitr", "ggthemes", "ggrepel", "dslabs")
-# install.packages(packages)
-# Load Libraries
-lapply(packages, library, character.only = TRUE)
+
+# Load Libraries quietly
+invisible(lapply(packages, library, character.only = TRUE))
+
 # Set seed for reproducibility
 set.seed(123)
+
+# show packages
+cat("Required Packages Loaded:", paste(packages, collapse = ", "))
 ```
 
-Here, I analyze target variable loan_status To show the distribution of default and non-default loan cases in the used dataset. I use value_counts() function to calculate the frequency counts and percentage percentages of each class using Python's Panda library. 
-The Matplotlib Python's library uses to create a bar chart that depicted the count of borrowers who were in default and non-default list. This study analysis gives insight into the overall credit risk pattern and helps with appropriate model evaluation metrics and training decision-making.
+
+### 3.4 Exploratory Data Analysis (EDA) : 
+
+#### 3.4.1 Missing Value Analysis :
 
 ```{python}
 #| code-fold: true
+#| output: false
+#| include: false
+credit1.isna().sum()
+```
+
+
+person_emp_length → 895 missing values
+<br>
+loan_int_rate → 3,116 missing values
+
+Complete data is present in all other variables. Preprocessing will use median imputation to handle these missing values in order to maintain the robustness of the distribution.
+
+#### 3.4.2 Summary Statistics :
+This summary presents an in-depth review of the number distribution, primary trend, and classification patterns of the dataset in order to identify data inconsistencies and anomalies.
+When continuing in to the encoding and analysis steps, it works as an assessment method to verify a variety of financial variables, such as salary and interest rates.
+
+```{python}
+#| code-fold: true
+#| warning: false
+#| message: false
+import pandas as pd
+
+# Show all columns
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+
+# Compute descriptive statistics
+desc = credit1.describe(include='all')
+
+# Round numeric values for clean display
+desc = desc.round(2)
+
+# Transpose so columns become rows
+desc = desc.T
+
+# Fill NaN for categorical stats to keep table clean
+desc = desc.fillna('')
+
+# Display row-by-row table
+print(desc.to_string())
+
+```
+
+#### 3.4.3 Encoding Categorical Variables :
+Here, Label encoding uses to transform categorical data, such as property ownership (person_home_ownership) and loan intent (loan_intent), into numerical values to enable machine learning analysis with LightGBM model. 
+When encoding quantitative labels convert into distinct integer variables, then this conversion helps to the model to execute mathematical computations on non-numeric characteristics. The replica of the dataset use to guarantee data accuracy.
+```{python}
+#| code-fold: true
+#| warning: false
+#| message: false
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+
+# Copy the dataset
+df = credit1.copy()
+
+# Encode categorical variables
+categorical_cols = df.select_dtypes(include=['object']).columns
+le = LabelEncoder()
+for col in categorical_cols:
+    df[col] = le.fit_transform(df[col].astype(str))
+
+# Select first 5 rows for display
+table = df.head()
+
+# round float numbers for neat display
+table = table.round({'loan_int_rate': 2, 'loan_percent_income': 2, 'person_emp_length': 1})
+
+# Display clean table
+print(table.to_string(index=False))
+
+```
+
+#### 3.4.4 Splitting Dataset (Test and Training Subset) :
+This study divides the credit dataset into training and testing subsets to assess the predictive accuracy of the model. The feature variables are stored in X and the target variable loan_status is recorded in y. This split uses 80% of the data for training and 20% for testing purpose the train_test_split() function, so this  model assess on data that has not been tested.
+
+```{python}
+#| code-fold: true
+#| label: data-splitting
+#| echo: true
+
+from sklearn.model_selection import train_test_split
+
+# Define features and target
+X = df.drop("loan_status", axis=1)
+y = df["loan_status"]
+
+# Perform the split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, 
+    y, 
+    test_size=0.2, 
+    random_state=42,
+    stratify=y
+)
+
+# Print results 
+print(f"Total dataset: {df.shape}\nTraining set size: {X_train.shape[0]}\nTesting set size: {X_test.shape[0]}")
+```
+
+#### 3.4.5 Target Distribution :
+This study analyze target variable loan_status To show the distribution of default and non-default loan cases in the used dataset. I use value_counts() function to calculate the frequency counts and percentage percentages of each class using Python's Panda library. 
+The Matplotlib Python's library uses to create a bar chart that depicted the count of borrowers who were in default and non-default list. This study analysis gives insight into the overall credit risk pattern and helps with appropriate model evaluation metrics and training decision-making.
+
+
+```{python}
+#| label: clean-target-distribution-boxed
+#| code-fold: true
 #| echo: false
+#| warning: false
+#| output: true
+
 import matplotlib.pyplot as plt
 
-# Target Distribution
+# Compute target counts and percentages
+target_counts = credit1['loan_status'].value_counts().sort_index()
+target_percentage = credit1['loan_status'].value_counts(normalize=True).sort_index() * 100
 
-target_counts = credit1['loan_status'].value_counts()
-print("Target Counts:\n", target_counts)
+# Set up the figure 
+_ = plt.figure(figsize=(6, 5)) 
 
-target_percentage = credit1['loan_status'].value_counts(normalize=True) * 100
-print("\nTarget Percentage:\n", target_percentage)
+# Plot  bars with your specific color #587597
+bars = plt.bar(target_counts.index, target_counts.values, 
+               color='#587597', edgecolor='black', width=0.4)
 
-plt.figure()
-credit1['loan_status'].value_counts().plot(kind='bar')
-plt.title("Target Distribution (Loan Status)")
-plt.xlabel("Loan Status (0 = Non-default, 1 = Default)")
-plt.ylabel("Count")
-plt.xticks(rotation=0)
+# Add percentages 
+for bar, perc in zip(bars, target_percentage):
+    height = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width()/2, 
+             height + (max(target_counts) * 0.03), 
+             f'{perc:.2f}%', 
+             ha='center', va='bottom', 
+             fontsize=11, fontweight='bold')
+
+# Titles and labels
+plt.title("Target Distribution (Loan Status)", fontsize=14, pad=15)
+plt.xlabel("Loan Status (0 = Non-default, 1 = Default)", fontsize=12)
+plt.ylabel("Count", fontsize=12)
+
+# Make the Y-axis "longer"
+plt.ylim(0, max(target_counts) * 1.2) 
+
+# Keep bars closer together
+_ = plt.xlim(-0.7, 1.7) 
+
+# Clean up 
+_ = plt.xticks([0, 1])
+ax = plt.gca()
+for spine in ax.spines.values():
+    spine.set_visible(True)
+    spine.set_color('black')
+    spine.set_linewidth(1)
+
 plt.show()
 ```
 
+The histogram shows the skewness and distribution of the amount of loans proposed across 30 categories, offering an accurate representation of customer's basic credit levels and financial dimensions prior to model validation.
 ```{python}
-#| code-fold: true
+#| label: fig-loan-dist
+#| fig-cap: "Distribution of Loan Amounts"
+#| code-fold: false
 #| echo: false
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# Load dataset inside Python environment
+# Load dataset (ensure the 'datasets/' folder exists in your directory)
 credit1 = pd.read_csv("datasets/credit_risk_dataset.csv")
-plt.figure()
-plt.hist(credit1['loan_amnt'], bins=30)
-plt.title("Loan Amount Distribution")
-plt.xlabel("Loan Amount")
-plt.ylabel("Frequency")
+
+# Plotting with requested color #587597
+_ = plt.hist(credit1['loan_amnt'], bins=30, color='#587597', edgecolor='white')
+
+# Formatting the plot
+_ = plt.title("Loan Amount Distribution")
+_ = plt.xlabel("Loan Amount")
+_ = plt.ylabel("Frequency")
+
 plt.show()
-
-
 ```
 
+This heatmap represents the linear correlations between numerical data to find characteristics that are highly correlated with the risk of credit and possible multicollinearity. So, can find out which economic factors have the greatest impact on the expected outcomes of the model through analyzing their association intensity.
 
 ```{python}
 #| code-fold: true
@@ -298,96 +456,90 @@ plt.tight_layout()
 plt.show()
 ```
 
+### 3.5 Train LightGBM Model :
 
-
-u### 3.1. Data Ingestion
-
-This code chunk is importing the dataset from the folder datasets which it is finding at the root of the github repo and it is concatenating the path to run the function read_csv from tidyverse.
-
-```{r}
-#| code-fold: true
-#| output: false
-find_git_root <- function(start = getwd()) {
-  path <- normalizePath(start, winslash = "/", mustWork = TRUE)
-  while (path != dirname(path)) {
-    if (dir.exists(file.path(path, ".git"))) return(path)
-    path <- dirname(path)
-  }
-  stop("No .git directory found — are you inside a Git repository?")
-}
-
-repo_root <- find_git_root()
-datasets_path <- file.path(repo_root, "datasets")
-
-# Reading the datafile credit_risk_dataset.csv
-credit_path <- file.path(datasets_path, "credit_risk_dataset.csv")
-credit1 = read_csv(credit_path, show_col_types = FALSE)
-```
-
-
-```{r}
-summary(credit1)
-head(credit1)
-# Count total NAs per column
-colSums(is.na(credit1))
-```
-
-I found that:
-
-- person_emp_length has 895 NA values
-- loan_int_rate has 3116 NA values
-
-
-test data ingestion using python
-
-```{r}
-# renv::use_python(type = "conda", envname = "myenv")
-# reticulate::py_install("numpy")
-# reticulate::py_install("pandas")
-# reticulate::py_install("skimpy")
-```
+This study implements a LightGBM model Classifier for developing a strong gradient-boosted decision tree model with 300 estimators and a managed learning rate and depth of 7. This was done to successfully balance the model's complexity and flexibilty to avoid overfitting the data on the credit risk dataset. This implementation seems to have the best balance of optimum computational performance while including associations which are not linear between financial data.
 
 ```{python}
-# pip install pandas numpy
+import lightgbm as lgb
+
+# Initialize LightGBM Classifier with tuned hyperparameters
+lgb_model = lgb.LGBMClassifier(
+    n_estimators=300,
+    learning_rate=0.05,
+    max_depth=7,
+    num_leaves=31,
+    min_child_samples=20,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    reg_alpha=0.1,
+    reg_lambda=0.1,
+    random_state=42,
+    verbose=-1 # Recommended to keep report output clean
+)
+
+# Train without early stopping 
+# Note: Ensure X_train and y_train have been defined in a previous step
+lgb_model.fit(X_train, y_train)
+
 ```
+
+#### Predictions & Evaluation
 
 ```{python}
-#| code-fold: true
-#| output: false
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 
-import os
-import pandas as pd
+# Generate predictions
+y_pred_prob = lgb_model.predict_proba(X_test)[:, 1]
+y_pred = (y_pred_prob >= 0.5).astype(int)
 
-def find_git_root(start=None):
-    if start is None:
-        start = os.getcwd()
-    path = os.path.abspath(start)
-    
-    while True:
-        if os.path.isdir(os.path.join(path, ".git")):
-            return path
-        
-        parent = os.path.dirname(path)
-        if parent == path:
-            raise FileNotFoundError("No .git directory found — are you inside a Git repository?")
-        
-        path = parent
+# Calculate metrics
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+roc_auc = roc_auc_score(y_test, y_pred_prob)
 
-repo_root = find_git_root()
-datasets_path = os.path.join(repo_root, "datasets")
-
-# Reading the datafile credit_risk_dataset.csv
-credit_path = os.path.join(datasets_path, "credit_risk_dataset.csv")
-credit1 = pd.read_csv(credit_path)
+# Print results
+print(f"Accuracy: {accuracy:.4f}")
+print(f"Precision: {precision:.4f}")
+print(f"Recall: {recall:.4f}")
+print(f"F1-Score: {f1:.4f}")
+print(f"ROC-AUC: {roc_auc:.4f}")
 ```
 
+#### Confusion Matrix
 
 ```{python}
-from skimpy import skim
+import matplotlib.pyplot as plt
+from sklearn.metrics import ConfusionMatrixDisplay
 
-skim(credit1)
+# Plot confusion matrix
+ConfusionMatrixDisplay.from_predictions(y_test, y_pred, cmap='Blues')
+plt.title("Confusion Matrix")
+plt.show()
+
 ```
 
+#### ROC-Curve
+
+```{python}
+import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve
+
+# Calculate ROC curve values
+fpr, tpr, _ = roc_curve(y_test, y_pred_prob)
+
+# Plotting the ROC Curve
+_ = plt.plot(fpr, tpr, color='#587597', label=f'ROC AUC = {roc_auc:.2f}')
+_ = plt.plot([0, 1], [0, 1], 'k--') # Diagonal dashed line
+_ = plt.xlabel("False Positive Rate")
+_ = plt.ylabel("True Positive Rate")
+_ = plt.title("ROC Curve")
+plt.legend()
+plt.show()
+
+```
 
 ## 4. Conclusion
 

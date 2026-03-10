@@ -7,7 +7,7 @@ project:
     - about.qmd
 
 website:
-  title: "LightGBM Agentic AI Credit Risk"
+  title: "Credit Risk Assessment using LightGBM"
   navbar:
     tools:
       - icon: github
@@ -28,5 +28,8 @@ format:
       dark: darkly
     css: styles.css
     toc: true
+    code-fold: true       # <--- Enable code folding globally for all code blocks
 
 csl: apa-numeric-superscript-brackets.csl
+# csl: american-sociological-association.csl
+#csl: asa.csl
