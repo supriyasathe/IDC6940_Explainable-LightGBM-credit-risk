@@ -122,6 +122,7 @@ To guarantee effective ingestion and comprehend variable composition, the datase
 import os
 import pandas as pd
 from skimpy import skim
+import seaborn as sns
 
 def find_git_root(start=None):
     if start is None:
@@ -409,11 +410,12 @@ The histogram shows the skewness and distribution of the amount of loans propose
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 # Load dataset (ensure the 'datasets/' folder exists in your directory)
 credit1 = pd.read_csv("datasets/credit_risk_dataset.csv")
 
-# Plotting with requested color #587597
+# Plotting #587597
 _ = plt.hist(credit1['loan_amnt'], bins=30, color='#587597', edgecolor='white')
 
 # Formatting the plot
@@ -422,6 +424,48 @@ _ = plt.xlabel("Loan Amount")
 _ = plt.ylabel("Frequency")
 
 plt.show()
+```
+ 
+This graph shows distribution of independant variable person_income. Income is one of the most important predictors of creditworthiness and debt-repayment capacity in credit risk assessment. 
+```{python}
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(6,4))
+sns.histplot(credit1["person_income"], color='#587597', bins=50)
+plt.title("Income Distribution")
+plt.xlabel("Income")
+plt.ylabel("Frequency")
+plt.show()
+```
+
+A histogram represents age demographic frequency distribution of the person_age variable. Since people with secure employment and good credit histories are more likely to return loans, age may have an effect on credibility.
+
+```{python}
+sns.histplot(df["person_age"], color='#587597', bins=40)
+plt.title("Age Distribution")
+plt.show()
+```
+
+This barplot highlights the relates the applicant's income distribution with their loan repayment status.
+```{python}
+sns.boxplot(x="loan_status", y="person_income", data=df)
+plt.show()
+```
+
+```{python}
+
+if "home_ownership" in df.columns:
+
+    plt.figure(figsize=(8,5))
+
+    sns.countplot(x="home_ownership", hue="loan_status", data=df)
+
+    plt.title("Home Ownership vs Default")
+
+    plt.xticks(rotation=45)
+
+    plt.show()
 ```
 
 This heatmap represents the linear correlations between numerical data to find characteristics that are highly correlated with the risk of credit and possible multicollinearity. So, can find out which economic factors have the greatest impact on the expected outcomes of the model through analyzing their association intensity.
