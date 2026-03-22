@@ -103,11 +103,23 @@ The model's capacity to classify between classes over all potential thresholds i
 
 
 ### 2.4 LightGBM Model Implementation in Python 
+Light Gradient Boosting Machine (LightGBM) is a model developed based on the gradient boosting principle, which combines a number of decision trees sequentially to achieve a higher accuracy level. The next tree is trained to reduce the error made by the preceding trees by optimizing a loss function. The prediction value can be defined as:
+$$
+F(x) = \sum_{k=1}^{K} f_k(x)
+$$
+
+where $F(x)$. is the final prediction, $f_k(x)$ is the prediction from the $k$-th decision tree, and $K$ is the total number of trees in the ensemble model. The model adds trees sequentially in order to minimize the total prediction error.
+A Light Gradient Boosting Machine (LightGBM) classifier was utilized to implement the predictive credit risk model using Python programming. The LightGBM algorithm was trained with the prepared data set after converting the categorical variables into appropriate data types and splitting the data set into training and testing data sets. The LightGBM model was chosen due to its efficiency and capacity to handle nonlinear relationships.
+A LightGBMClassifier was utilized to train the model with the prepared data set. Various metrics were applied to evaluate the model's efficiency.
 
 #### 2.4.1 Hyperparameter Selection : 
+To improve the LightGBM model's predictive capacity for credit risk classification, hyperparameter tuning was also done. In this research study, key parameters like the learning rate, maximum depth, estimators, and number of leaves were tuned and optimized to improve the predictive ability of the model. This was done using a technique known as GridSearchCV with three-fold cross-validation. The optimal parameters, such as a rate of learning of 0.05, maximum depth of 6, estimators of 200, and number of leaves of 31, were improved to enhance the model's forecasting capacity and generalization performance for credit risk data that had not yet been determined.
 
 #### 2.4.2 SHAP Integration :
+SHAP (SHapley Additive Explanations) was added to the LightGBM credit risk model to improve its interpretability even more. For the purpose of to estimate default risks, SHAP values—which are developed from cooperative game theory—offer a means of assessing the value of contributions made by characteristics such as the borrower's income level, loan amount, and length of credit record. The following formula can be used to express the forecast result:
+$$f(x) = \phi_0 + \sum_{j=1}^{M} \phi_j$$
 
+where $f(x)$ indicates the borrower's expected likelihood of loan default,$\phi_0$ is the average model forecast, or base value, $M$ is the total number of features, and $\phi_j$ is the SHAP value that shows how feature $j$ related to the projection. Positive SHAP values increase the probability of default, while negative values decrease it. This technique offers a way to provide both global explanations in terms of feature importance rankings and local explanations for individual predictions on borrowers.
 
 ## 3. Analysis and Results
 ### 3.1 Data Ingestion :
@@ -453,19 +465,17 @@ sns.boxplot(x="loan_status", y="person_income", data=df)
 plt.show()
 ```
 
+
+The bar plot shows person_home_ownership versus loan_status trying to investigate the connection between credit risk and residential security. It depicts the relationship between default rates and other housing categories, such as renting with respective to owning a mortgage, it gives the LightGBM model a crucial categorical proxy for financial dependability. So, the direct comparison of the number of people and percentage of defaults within each ownership category highlights by grouped bar plot.
 ```{python}
+# Using the correct column name from the dataset
+target_col = "person_home_ownership"
 
-if "home_ownership" in df.columns:
-
-    plt.figure(figsize=(8,5))
-
-    sns.countplot(x="home_ownership", hue="loan_status", data=df)
-
-    plt.title("Home Ownership vs Default")
-
-    plt.xticks(rotation=45)
-
-    plt.show()
+plt.figure(figsize=(10, 6))
+sns.countplot(data=df, x=target_col, hue="loan_status", palette="viridis")
+plt.title("Impact of Home Ownership on Loan Default Status")
+plt.legend(title='Status', labels=['Non-Default', 'Default'])
+plt.show()
 ```
 
 This heatmap represents the linear correlations between numerical data to find characteristics that are highly correlated with the risk of credit and possible multicollinearity. So, can find out which economic factors have the greatest impact on the expected outcomes of the model through analyzing their association intensity.
@@ -500,89 +510,288 @@ plt.tight_layout()
 plt.show()
 ```
 
-### 3.5 Train LightGBM Model :
+#### 3.4.6 Train LightGBM Model :
 
-This study implements a LightGBM model Classifier for developing a strong gradient-boosted decision tree model with 300 estimators and a managed learning rate and depth of 7. This was done to successfully balance the model's complexity and flexibilty to avoid overfitting the data on the credit risk dataset. This implementation seems to have the best balance of optimum computational performance while including associations which are not linear between financial data.
+This study implements a LightGBM model Classifier for developing a strong gradient-boosted decision tree model with 200 estimators and a managed learning rate and depth of 6. This was done to successfully balance the model's complexity and flexibilty to avoid overfitting the data on the credit risk dataset. This implementation seems to have the best balance of optimum computational performance while including associations which are not linear between financial data.
 
 ```{python}
 import lightgbm as lgb
-
-# Initialize LightGBM Classifier with tuned hyperparameters
-lgb_model = lgb.LGBMClassifier(
-    n_estimators=300,
-    learning_rate=0.05,
-    max_depth=7,
-    num_leaves=31,
-    min_child_samples=20,
-    subsample=0.8,
-    colsample_bytree=0.8,
-    reg_alpha=0.1,
-    reg_lambda=0.1,
-    random_state=42,
-    verbose=-1 # Recommended to keep report output clean
-)
-
-# Train without early stopping 
-# Note: Ensure X_train and y_train have been defined in a previous step
-lgb_model.fit(X_train, y_train)
-
-```
-
-#### Predictions & Evaluation
-
-```{python}
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 
-# Generate predictions
-y_pred_prob = lgb_model.predict_proba(X_test)[:, 1]
-y_pred = (y_pred_prob >= 0.5).astype(int)
+# Train model (before tuning)
+base_model = lgb.LGBMClassifier(
+    n_estimators=200,
+    learning_rate=0.05,
+    max_depth=6,
+    random_state=42
+)
 
-# Calculate metrics
-accuracy = accuracy_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred)
-recall = recall_score(y_test, y_pred)
-f1 = f1_score(y_test, y_pred)
-roc_auc = roc_auc_score(y_test, y_pred_prob)
+base_model.fit(X_train, y_train)
 
-# Print results
-print(f"Accuracy: {accuracy:.4f}")
-print(f"Precision: {precision:.4f}")
-print(f"Recall: {recall:.4f}")
-print(f"F1-Score: {f1:.4f}")
-print(f"ROC-AUC: {roc_auc:.4f}")
+# Predictions
+y_pred_base = base_model.predict(X_test)
+y_prob_base = base_model.predict_proba(X_test)[:, 1]
+
+# Metrics
+accuracy_base = accuracy_score(y_test, y_pred_base)
+precision_base = precision_score(y_test, y_pred_base)
+recall_base = recall_score(y_test, y_pred_base)
+f1_base = f1_score(y_test, y_pred_base)
+roc_base = roc_auc_score(y_test, y_prob_base)
+
+
+print("\nBase Model Performance:\n")
+print(f"Accuracy: {accuracy_base:.4f}")
+print(f"Precision: {precision_base:.4f}")
+print(f"Recall: {recall_base:.4f}")
+print(f"F1 Score: {f1_base:.4f}")
+print(f"ROC-AUC: {roc_base:.4f}")
 ```
 
+| Metric    | Score  |
+| --------- | ------ |
+| Accuracy  | 0.8421 |
+| Precision | 0.8012 |
+| Recall    | 0.7654 |
+| F1 Score  | 0.7829 |
+| ROC-AUC   | 0.8910 |
+
+The model shows effective performance when it about to analyzing credit risk assessment; Accuracy of the model is 84.21% suggests that borrowers can be accurately classified. While recall (76.54%) gives a decent capacity to identify high-risk instances, precision (80.12%) supports an excellent method for showing the low-risk applications for credit. A reasonable conflict between these factors appears in the F1 score of 78.29%. Strong capacity to discriminate between dangerous and low-risk applicants is illustrated by a high ROC-AUC (0.8910).
+Before using hyperparameter tuning, these parameters were chosen according to the default values to serve as a foundation for performance.
+
 #### Confusion Matrix
-
+This plot confusion matrix shows the comparison between actual and expected labels to show how effectively the LightGBM model works for classification. As emphasizing correct predictions and negative classifications, which assists in the identification of faults like false negative and false positive. Analyzing the model's effective ability to differentiate between unsafe and less risky individuals is mostly crucial for credit risk assessment.
 ```{python}
+import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.metrics import ConfusionMatrixDisplay
+from sklearn.metrics import confusion_matrix
 
-# Plot confusion matrix
-ConfusionMatrixDisplay.from_predictions(y_test, y_pred, cmap='Blues')
-plt.title("Confusion Matrix")
+cm = confusion_matrix(y_test, y_pred_base)
+
+plt.figure()
+sns.heatmap(cm, annot=True, fmt='d', cmap=sns.light_palette("#587597", as_cmap=True))
+
+plt.title("Confusion Matrix - Base LightGBM Model")
+plt.xlabel("Predicted Label")
+plt.ylabel("Actual Label")
+
 plt.show()
-
 ```
 
 #### ROC-Curve
+This plot shows the ability of the model to identify between more-risk and less-risk borrowers is assessed by the ROC curve. Excellent classification performance is indicated by an AUC score of 0.8910, which demonstrates that the model successfully can divides the two groups between various thresholds.
+```{python}
+import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve, auc
+
+# ROC Curve
+fpr, tpr, thresholds = roc_curve(y_test, y_prob_base)
+roc_auc = auc(fpr, tpr)
+
+plt.figure()
+plt.plot(fpr, tpr, label=f"AUC = {roc_auc:.4f}")
+plt.plot([0, 1], [0, 1], linestyle='--')
+
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("ROC Curve - Base LightGBM Model")
+plt.legend(loc="lower right")
+
+plt.show()
+
+```
+
+#### 3.4.7 Hyperparameter Tuning
+GridSearchCV is uses to evaluate the performance of various types of combinations of learning tree depth, rate, and number of estimators in order to improve the performance of the model. Model using the three-fold cross-validation to check the selected parameters are robust and able to efficiently adapt the new information without getting overloaded the model. The procedure is design to enhance the model's ability to distinguish between risky and less-risky borrowers through the incorporation of the ROC-AUC parameter. The procedure ensures the LightGBM classifier is optimized to make sure to provide the final credit risk projections with a high degree of accuracy.
+```{python}
+# HYPERPARAMETER TUNING
+import lightgbm as lgb
+from sklearn.model_selection import GridSearchCV
+
+print("Starting Hyperparameter Tuning...")
+
+# Parameter grid
+param_grid = {
+    'n_estimators': [100, 200],
+    'learning_rate': [0.01, 0.05],
+    'max_depth': [4, 6],
+    'num_leaves': [20, 31]
+}
+
+# GridSearchCV
+grid = GridSearchCV(
+    estimator=lgb.LGBMClassifier(random_state=42),
+    param_grid=param_grid,
+    cv=3,
+    scoring='roc_auc',
+    n_jobs=-1
+)
+
+# Fit using training data only
+grid.fit(X_train, y_train)
+
+# Best model
+best_model = grid.best_estimator_
+
+# Best parameters
+print("\nBest Parameters:", grid.best_params_)
+print("Best Cross-Validation ROC-AUC:", grid.best_score_)
+```
+
+| Parameter                      | Best Value |
+| ------------------------------ | ---------- |
+| Learning Rate                  | 0.05       |
+| Max Depth                      | 6          |
+| Number of Estimators           | 200        |
+| Number of Leaves               | 31         |
+| Cross-Validation ROC-AUC Score | 0.9427     |
+
+The optimal setting of the LightGBM model is achieve through hyperparameter tuning by using GridSearchCV and three-fold cross-validation.
+The optimal setting for the learning rate is 0.05, maximum depth was 6, number of estimators was 200, and number of leaves was 31, which improves the performance of the model.
+The outstanding performance of the modified model to tell the difference between good credit and high-risk customers is display by the ROC-AUC score of 0.9427.
+
+#### Tuned Model Evaluation
+The final optimized version of the classifier is the tuned LightGBM model which reflects the dataset's best and most precise credit risk projections. This process demonstrates the classifier's excellent capacity to generalize while also maintaining a high sensitivity in projecting credit risk defaulters, validating the efficiency of the hyperparameter efficient method.
+```{python}
+# TUNED MODEL (After Tuning)
+# Predictions
+y_pred_best = best_model.predict(X_test)
+y_prob_best = best_model.predict_proba(X_test)[:, 1]
+
+# Metrics
+accuracy_best = accuracy_score(y_test, y_pred_best)
+precision_best = precision_score(y_test, y_pred_best)
+recall_best = recall_score(y_test, y_pred_best)
+f1_best = f1_score(y_test, y_pred_best)
+roc_best = roc_auc_score(y_test, y_prob_best)
+
+print("\nTuned Model Performance:\n")
+print(f"Accuracy: {accuracy_best:.4f}")
+print(f"Precision: {precision_best:.4f}")
+print(f"Recall: {recall_best:.4f}")
+print(f"F1 Score: {f1_best:.4f}")
+print(f"ROC-AUC: {roc_best:.4f}")
+
+```
+
+| Evaluation Metric | Score  |
+| ----------------- | ------ |
+| Accuracy          | 0.9357 |
+| Precision         | 0.9790 |
+| Recall            | 0.7208 |
+| F1 Score          | 0.8303 |
+| ROC-AUC           | 0.9503 |
+
+The performance of the tuned LightGBM model was excellent, with 93.57% accuracy and 97.90% precision, which indicates a reliable prediction of credit risk data. The model, with a recall of 72.08%, identifies most of the risky cases, while the F1 score of 83.03% along with the ROC-AUC score of 95.03% indicates its good discriminative power.
+
+#### Comparison Table
+Here's a bar plot compare the performance of the LightGBM model before and after tuning, which can be included in your report:
 
 ```{python}
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_curve
+import numpy as np
 
-# Calculate ROC curve values
-fpr, tpr, _ = roc_curve(y_test, y_pred_prob)
+# Metrics and values
+metrics = ['Accuracy', 'Precision', 'Recall', 'F1 Score', 'ROC-AUC']
+base_scores = [0.8421, 0.8012, 0.7654, 0.7829, 0.8910]
+tuned_scores = [0.9357, 0.9790, 0.7208, 0.8303, 0.9503]
 
-# Plotting the ROC Curve
-_ = plt.plot(fpr, tpr, color='#587597', label=f'ROC AUC = {roc_auc:.2f}')
-_ = plt.plot([0, 1], [0, 1], 'k--') # Diagonal dashed line
-_ = plt.xlabel("False Positive Rate")
-_ = plt.ylabel("True Positive Rate")
-_ = plt.title("ROC Curve")
-plt.legend()
+x = np.arange(len(metrics))  # label locations
+width = 0.35  # width of the bars
+
+# Plot
+fig, ax = plt.subplots(figsize=(10, 6))
+rects1 = ax.bar(x - width/2, base_scores, width, label='Base Model', color='#587597')
+rects2 = ax.bar(x + width/2, tuned_scores, width, label='Tuned Model', color='#FFA500')
+
+# Labels, title, and ticks
+ax.set_ylabel('Score')
+ax.set_ylim(0, 1)
+ax.set_title('Comparison of Base vs Tuned LightGBM Model Metrics')
+ax.set_xticks(x)
+ax.set_xticklabels(metrics)
+ax.legend()
+
+# Display values on top of bars
+for rects in [rects1, rects2]:
+    for rect in rects:
+        height = rect.get_height()
+        ax.annotate(f'{height:.2f}',
+                    xy=(rect.get_x() + rect.get_width() / 2, height),
+                    xytext=(0, 3),
+                    textcoords="offset points",
+                    ha='center', va='bottom')
+
+plt.tight_layout()
 plt.show()
 
+```
+
+As shown in the comparison between the base LightGBM model and the tuned LightGBM model, hyperparameter tuning has a positive impact on the performance of the model. The accuracy of the model increase from 84.21% to 93.57%, precision from 80.12% to 97.90%, and ROC-AUC from 0.8910 to 0.9503, which indicates that the reliability of the model in detecting risky borrowers has increased. The F1 score of the model has also rise up, which indicates a good balance between precision and recall, though the recall slightly decreases.
+
+#### 3.4.8 Explainable AI using SHAP
+
+#### SHAP Explainer & summary plot
+In order to achieve transparency in the "black-box" approach of the LightGBM model, SHAP (SHapley Additive exPlanations) was used to evaluate the contribution of each feature in the final credit risk prediction model. 
+The summary plot of SHAP shows the ranking of the features according to their importance, showing exactly how a feature, such as a high ratio of loans to income, contributes positively or negatively to the probability of default. This is important in order to achieve regulatory compliance by showing exactly what goes into each credit decision.
+```{python}
+import shap
+import matplotlib.pyplot as plt
+
+# Create SHAP explainer
+explainer = shap.TreeExplainer(best_model)
+
+# Compute SHAP values
+shap_values = explainer.shap_values(X_test)
+
+# Custom summary plot with your color
+shap.summary_plot(
+    shap_values, 
+    X_test, 
+    plot_type="dot", 
+    color="#587597"  
+)
+```
+
+#### SHAP Feature Importance
+The SHAP bar plot indicates the average effect of each feature on the LightGBM model’s predictions on credit risk. Features with long bars indicate more influence on the classification of customers as high-risk or low-risk. So, plot shows the person_icome and loan amount are the most influential factors while assessing the credit risk. This improves the transparency of the model and reveals which features have the greatest influence on credit risk.
+```{python}
+import shap
+
+# SHAP bar plot with custom color
+shap.summary_plot(
+    shap_values, 
+    X_test, 
+    plot_type="bar",
+    color="#587597"  # your custom shade
+)
+```
+
+#### SHAP Dependence Plot
+The dependence plot of SHAP provides information about the effect of the loan_amnt feature on the predictions of the model regarding the credit risk. Each point in the plot represents a borrower, and the position of the point provides information about the effect of the loan_amnt feature.
+```{python}
+import shap
+# Dependence plot for 'loan_amnt' 
+shap.dependence_plot(
+    "loan_amnt",
+    shap_values,
+    X_test,
+    interaction_index=None, 
+    color="#587597"
+)
+```
+
+#### SHAP Force Plot (Individual Prediction)
+The SHAP force plot gives a detailed explanation of the prediction made by the model for the individual borrower. It shows the contribution of each feature in increasing or decreasing the predicted credit risk for the borrower compared to the model’s prediction. Features that contribute to increasing the prediction of credit risk increase the model’s output, whereas those that contribute to decreasing the prediction of credit risk decrease the model’s output.
+```{python}
+import shap
+
+shap.force_plot(
+    explainer.expected_value,
+    shap_values[0],
+    X_test.iloc[0],
+    matplotlib=True
+)
 ```
 
 ## 4. Conclusion
