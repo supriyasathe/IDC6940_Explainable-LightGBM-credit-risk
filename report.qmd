@@ -22,9 +22,11 @@ Many machine learning models are frequently getting attacked for being inaccessi
 
 Nowadays, Explainable Artificial Intelligence (XAI) approaches are extensively used by working professionals  and researchers  mainly to improve the easy accessibility of machine learning models for to overcome this obstacles. The goal of explainable  methods is to give insights on how models provide results while ensuring high accuracy in forecasting. Oyeyemi et al. (2025) @oyeyemiexplainable claim that by combining explainable AI method with machine learning models, businesses can make an algorithm that are precise and easy to understand, boosting confidence in digital automatic economic decision-making system. Additionally,  recent research also shows the how artificial intelligence in advancing help credit decisions-making process with their developing role for different financial  organizations across the globe. In one example, McKinsey & Company (2025) @Nuzzo_Kremer_Tavakol_Harreis describes how AI-driven solutions are transforming the entire credit process by improving automatic decision-making and more efficient data analysis. In a similar vein, Kubam (2024) @kubam2025agentic focuses attention to new cognitive credit assessment platforms that allow for real-time decision-making about finances by merging technology with comprehension. So, these modern advancements indicates how credit risk management techniques plays vital role in bringing together straight decision structures with complex data assess technology for today. 
 
-In this study, the Light Gradient Boosting Machine (LightGBM) algorithm uses to create an explainable credit risk assessment system. LightGBM is a dynamic gradient boosting method that is now commonly used in machine learning applications because of it has excellent predictive accuracy, adaptability, as well as efficiency when dealing with hierarchical datasets. The approched model is applies to a credit risk dataset that includes customer income, history of credit, and demographic information such as address and travel. It is built in Python. The main goals are of this model is predicting the possibility of defaulters who are failing to pay loans and  highlighting the important factors which are affecting on credit risk result. 
+In this study, the Light Gradient Boosting Machine (LightGBM) algorithm uses to create an explainable credit risk assessment system. LightGBM is a dynamic gradient boosting method that is now commonly used in machine learning applications because of it has excellent predictive accuracy, adaptability, as well as efficiency when dealing with hierarchical datasets. The approch model is applied to a credit risk dataset that includes customer income, history of credit, and demographic information such as address and travel history. It is built in Python. The main goals of this model are predicting the possibility of defaulters who are failing to pay loans and  highlighting the important factors which are affecting on credit risk result. 
 
-This research uses SHAP (SHapley Additive Explanations), an explainable method that evaluates each feature's role in contribution to the model result outcome in order to evaluate machine learning projections and improve model accessibility. Here the benefit of SHAP are both local interpretability, which explains particular forecasts, and global interpretability, which explains overall characteristic significance throughout the dataset. The suggested structure is for both exact credit risk forecasting and insightful statistical model analysis by integrating LightGBM with SHAP explanations methods.The recommended credit risk evaluation methodology has some important steps. The dataset is initially collect and preprocess by encoding category variables then handling with missing values. Secondly, to assess prediction performance, later the dataset is split into training and testing subsets. After that, the collected training data is utilized to train the LightGBM classification. Fourth, there are various metrics including accuracy, precision, recall, F1-score, and ROC-AUC are used to determine the model's forecasting ability for the dataset. For the purpose to assess the forecasts of models and determine the most important variables impacting credit risk, SHAP-based explanations are finally use.
+This research uses SHAP (SHapley Additive Explanations), an explainable method that evaluates each feature's role in contribution to the model result to evaluate machine learning projections and improve model accessibility. Here the benefit of SHAP are both local interpretability, which explains particular forecasts, and global interpretability, which explains overall characteristic significance throughout the dataset. The suggested structure is for both exact credit risk forecasting and insightful statistical model analysis by integrating LightGBM with SHAP explanations methods.The recommended credit risk evaluation methodology has some important steps.
+
+The dataset is initially collected and preprocessed by encoding category variables then handling the missing values. The dataset is split into training and testing subsets. After that, the collected training data is utilized to train the LightGBM classification. Later, there are various metrics including accuracy, precision, recall, F1-score, and ROC-AUC are used to determine the model's forecasting ability for the dataset. For the purpose to assess the forecasts of models and determine the most important variables impacting credit risk, SHAP-based explanations are finally use.
 
 The objective of this research is to show how new advanced algorithms can work for machine learning  and can merge with explainable  methodologies to generate efficient, transparent, and consistent credit risk assessment solutions for the system. The suggested model intends to improve transparency of making decisions and aid the banking area in better comprehending the variables influencing customers credit of default by bringing the accessibility that comes from SHAP with the ability to forecast of LightGBM model.
 
@@ -239,7 +241,7 @@ This project research is using the Credit Risk Dataset, which contains 32,581 bo
 
 packages <- c("tidyverse", "skimr", "knitr", "ggthemes", "ggrepel", "dslabs")
 
-# Load Libraries quietly
+# Load Libraries
 invisible(lapply(packages, library, character.only = TRUE))
 
 # Set seed for reproducibility
@@ -285,13 +287,13 @@ pd.set_option('display.width', None)
 # Compute descriptive statistics
 desc = credit1.describe(include='all')
 
-# Round numeric values for clean display
+# Round numeric values 
 desc = desc.round(2)
 
-# Transpose so columns become rows
+# Transpose to columns become rows
 desc = desc.T
 
-# Fill NaN for categorical stats to keep table clean
+# Fill NaN for categorical stats 
 desc = desc.fillna('')
 
 # Display row-by-row table
@@ -378,7 +380,7 @@ target_percentage = credit1['loan_status'].value_counts(normalize=True).sort_ind
 # Set up the figure 
 _ = plt.figure(figsize=(6, 5)) 
 
-# Plot  bars with your specific color #587597
+# Plot  bars 
 bars = plt.bar(target_counts.index, target_counts.values, 
                color='#587597', edgecolor='black', width=0.4)
 
@@ -424,13 +426,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-# Load dataset (ensure the 'datasets/' folder exists in your directory)
+# Load dataset 
 credit1 = pd.read_csv("datasets/credit_risk_dataset.csv")
 
-# Plotting #587597
+# Plot the histogram
 _ = plt.hist(credit1['loan_amnt'], bins=30, color='#587597', edgecolor='white')
 
-# Formatting the plot
+# Format the plot
 _ = plt.title("Loan Amount Distribution")
 _ = plt.xlabel("Loan Amount")
 _ = plt.ylabel("Frequency")
@@ -486,10 +488,10 @@ This heatmap represents the linear correlations between numerical data to find c
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Load dataset inside Python chunk
+# Load dataset
 credit1 = pd.read_csv("datasets/credit_risk_dataset.csv")
 
-# Select numeric variables only
+# Select numeric variables 
 numeric_df = credit1.select_dtypes(include=['number'])
 
 # Compute correlation matrix
@@ -510,7 +512,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-#### 3.4.6 Train LightGBM Model :
+#### 3.4.6 Train LightGBM Model (Before Tuning) :
 
 This study implements a LightGBM model Classifier for developing a strong gradient-boosted decision tree model with 200 estimators and a managed learning rate and depth of 6. This was done to successfully balance the model's complexity and flexibilty to avoid overfitting the data on the credit risk dataset. This implementation seems to have the best balance of optimum computational performance while including associations which are not linear between financial data.
 
@@ -604,7 +606,7 @@ plt.show()
 #### 3.4.7 Hyperparameter Tuning
 GridSearchCV is uses to evaluate the performance of various types of combinations of learning tree depth, rate, and number of estimators in order to improve the performance of the model. Model using the three-fold cross-validation to check the selected parameters are robust and able to efficiently adapt the new information without getting overloaded the model. The procedure is design to enhance the model's ability to distinguish between risky and less-risky borrowers through the incorporation of the ROC-AUC parameter. The procedure ensures the LightGBM classifier is optimized to make sure to provide the final credit risk projections with a high degree of accuracy.
 ```{python}
-# HYPERPARAMETER TUNING
+# Hyperparameter Tuning
 import lightgbm as lgb
 from sklearn.model_selection import GridSearchCV
 
@@ -627,7 +629,7 @@ grid = GridSearchCV(
     n_jobs=-1
 )
 
-# Fit using training data only
+# Fit using training data
 grid.fit(X_train, y_train)
 
 # Best model
@@ -653,7 +655,8 @@ The outstanding performance of the modified model to tell the difference between
 #### Tuned Model Evaluation
 The final optimized version of the classifier is the tuned LightGBM model which reflects the dataset's best and most precise credit risk projections. This process demonstrates the classifier's excellent capacity to generalize while also maintaining a high sensitivity in projecting credit risk defaulters, validating the efficiency of the hyperparameter efficient method.
 ```{python}
-# TUNED MODEL (After Tuning)
+# Tuned Model (After Tuning)
+
 # Predictions
 y_pred_best = best_model.predict(X_test)
 y_prob_best = best_model.predict_proba(X_test)[:, 1]
@@ -744,8 +747,7 @@ explainer = shap.TreeExplainer(best_model)
 # Compute SHAP values
 shap_values = explainer.shap_values(X_test)
 
-# Custom summary plot with your color
-shap.summary_plot(
+# Custom summary plot 
     shap_values, 
     X_test, 
     plot_type="dot", 
@@ -758,12 +760,12 @@ The SHAP bar plot indicates the average effect of each feature on the LightGBM m
 ```{python}
 import shap
 
-# SHAP bar plot with custom color
+# SHAP bar plot 
 shap.summary_plot(
     shap_values, 
     X_test, 
     plot_type="bar",
-    color="#587597"  # your custom shade
+    color="#587597" 
 )
 ```
 

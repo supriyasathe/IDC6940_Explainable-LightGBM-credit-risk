@@ -1,43 +1,16 @@
 ---
-title: "Explainable Agentic AI for Credit Risk Assessment using LightGBM"
-author:
-  - name: "Supriya Sathe (Advisor: Dr. Cohen)"
-    url: https://github.com/supriyasathe
-  - name: "Supervisor: Dr. Cohen"
-bibliography: references.bib
-link-citations: true
----
-
-
-## 1. Introduction
-
-A vital role for financial institutions is evaluating credit risk, which has a direct impact on lending choices, portfolio performance, and regulatory compliance. Because they are straightforward and easy to understand, traditional credit scoring techniques like logistic regression have gained widespread use. These conventional models, however, find it difficult to account for nonlinear patterns and complicated borrower behaviors as financial data grows in size, complexity, and heterogeneity.
-
-The predictive accuracy of credit risk modeling has greatly increased as a result of recent developments in machine learning, especially ensemble-based techniques like Gradient Boosting Decision Trees (GBDT). Among these techniques, the Light Gradient Boosting Machine (LightGBM) has shown itself to be a very effective and scalable framework that can deal with imbalanced and high-dimensional credit datasets. Although LightGBM performs well, it is frequently perceived as a "black-box" paradigm, which restricts transparency and undermines confidence among auditors, regulators, and business users.
-
-This paper suggests an Explainable Agentic AI framework for credit risk assessment utilizing LightGBM in order to overcome these issues. The framework combines an intelligent agentic decision layer that analyzes model predictions, produces insightful explanations, and suggests suitable courses of action with SHAP-based explainability. The suggested approach seeks to facilitate responsible and explicable credit decision-making in regulated financial environments by fusing prediction accuracy, transparency, and adaptive reasoning.
-
+title: "Explainable Credit Risk Assessment using LightGBM"
 
 ---
 
-## Cheatsheet
+This project aims to create an explainable AI framework in evaluating credit risk using LightGBM, which is an advanced gradient boosting machine learning model.
+It uses machine learning to assess the risk of defaulting on loans by borrowers.
+To make the model more transparent, it has been integrated with SHAP explanations.
+The project is expected to be beneficial in making responsible decisions in financial organizations.
+I sincerely thank Dr. Cohen Achraf for his guidance and support throughout this project.
 
-This project is focused on experimenting with the code chunks to ingest and analyse the dataset as a preliminary analysis.
 
-For the project remember to add the appropriate flags into the code chunks otherwise everything will be rendered. 
+![](images/Credit_risk_home_page.png)
 
-Below are example of flags for the code chunk also a code chunk with double curly brackest is not executable {{r}}:
+Here, You can learn more about me on the "About" tab. My individual literature contributions are available on the "Literature" tab. The complete project report is available on the "Report" tab. 
 
-```{{r}}
-#| code-fold: true
-#| message: false
-#| warning: false
-#| output: false
-```
-
-NOTE:
-
-these shorcuts are helpfull when debugging or testing code chunks
-
-- Ctrl + Enter (Windows/Linux) or Cmd + Enter (Mac) will execute the current line the cursor is on.
-- Shift + Enter (Windows/Linux and Mac) will execute the currently highlighted multiple lines of code.
