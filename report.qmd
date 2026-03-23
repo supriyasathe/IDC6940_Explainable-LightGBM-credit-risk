@@ -748,10 +748,11 @@ explainer = shap.TreeExplainer(best_model)
 shap_values = explainer.shap_values(X_test)
 
 # Custom summary plot 
+shap.summary_plot(
     shap_values, 
     X_test, 
     plot_type="dot", 
-    color="#587597"  
+    color="#587597"
 )
 ```
 
