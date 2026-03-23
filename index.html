@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Supriya Sathe (Advisor: Dr.&nbsp;Cohen)">
-<meta name="author" content="Supervisor: Dr.&nbsp;Cohen">
 
-<title>Explainable Agentic AI for Credit Risk Assessment using LightGBM – Credit Risk Assessment using LightGBM</title>
+<title>Explainable Credit Risk Assessment using LightGBM – Credit Risk Assessment using LightGBM</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,41 +19,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -322,15 +285,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">1. Introduction</a></li>
-  <li><a href="#cheatsheet" id="toc-cheatsheet" class="nav-link" data-scroll-target="#cheatsheet">Cheatsheet</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -338,20 +294,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Explainable Agentic AI for Credit Risk Assessment using LightGBM</h1>
+<h1 class="title">Explainable Credit Risk Assessment using LightGBM</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Authors</div>
-    <div class="quarto-title-meta-contents">
-             <p><a href="https://github.com/supriyasathe">Supriya Sathe (Advisor: Dr.&nbsp;Cohen)</a> </p>
-             <p>Supervisor: Dr.&nbsp;Cohen </p>
-          </div>
-  </div>
     
   
     
@@ -362,33 +311,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">1. Introduction</h2>
-<p>A vital role for financial institutions is evaluating credit risk, which has a direct impact on lending choices, portfolio performance, and regulatory compliance. Because they are straightforward and easy to understand, traditional credit scoring techniques like logistic regression have gained widespread use. These conventional models, however, find it difficult to account for nonlinear patterns and complicated borrower behaviors as financial data grows in size, complexity, and heterogeneity.</p>
-<p>The predictive accuracy of credit risk modeling has greatly increased as a result of recent developments in machine learning, especially ensemble-based techniques like Gradient Boosting Decision Trees (GBDT). Among these techniques, the Light Gradient Boosting Machine (LightGBM) has shown itself to be a very effective and scalable framework that can deal with imbalanced and high-dimensional credit datasets. Although LightGBM performs well, it is frequently perceived as a “black-box” paradigm, which restricts transparency and undermines confidence among auditors, regulators, and business users.</p>
-<p>This paper suggests an Explainable Agentic AI framework for credit risk assessment utilizing LightGBM in order to overcome these issues. The framework combines an intelligent agentic decision layer that analyzes model predictions, produces insightful explanations, and suggests suitable courses of action with SHAP-based explainability. The suggested approach seeks to facilitate responsible and explicable credit decision-making in regulated financial environments by fusing prediction accuracy, transparency, and adaptive reasoning.</p>
-<hr>
-</section>
-<section id="cheatsheet" class="level2">
-<h2 class="anchored" data-anchor-id="cheatsheet">Cheatsheet</h2>
-<p>This project is focused on experimenting with the code chunks to ingest and analyse the dataset as a preliminary analysis.</p>
-<p>For the project remember to add the appropriate flags into the code chunks otherwise everything will be rendered.</p>
-<p>Below are example of flags for the code chunk also a code chunk with double curly brackest is not executable {{r}}:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#| output: false</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>NOTE:</p>
-<p>these shorcuts are helpfull when debugging or testing code chunks</p>
-<ul>
-<li>Ctrl + Enter (Windows/Linux) or Cmd + Enter (Mac) will execute the current line the cursor is on.</li>
-<li>Shift + Enter (Windows/Linux and Mac) will execute the currently highlighted multiple lines of code.</li>
-</ul>
+<p>This project aims to create an explainable AI framework in evaluating credit risk using LightGBM, which is an advanced gradient boosting machine learning model. It uses machine learning to assess the risk of defaulting on loans by borrowers. To make the model more transparent, it has been integrated with SHAP explanations. The project is expected to be beneficial in making responsible decisions in financial organizations. I sincerely thank Dr.&nbsp;Cohen Achraf for his guidance and support throughout this project.</p>
+<p><img src="images/Credit_risk_home_page.png" class="img-fluid"></p>
+<p>Here, You can learn more about me on the “About” tab. My individual literature contributions are available on the “Literature” tab. The complete project report is available on the “Report” tab.</p>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
