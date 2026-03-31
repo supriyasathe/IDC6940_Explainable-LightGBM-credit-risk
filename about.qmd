@@ -2,4 +2,15 @@
 title: "About"
 ---
 
-About this site
+#### About the Author
+
+Supriya Sathe is a graduate student currently enrolled in a Master's program in Data Science at the University of West Florida. Her areas of interest include machine learning, data analytics, and interpretable artificial intelligence. She has experience working with programming tools such as Python and R for data analysis, statistical modeling, and developing machine learning solutions. Her areas of interest include applying data-driven solutions to real-world problems using various analytical tools.
+Linkedin ID : Supriya Sathe (https://www.linkedin.com/in/supriya-sathe-968412162/)
+
+### Advisor 
+
+Dr. Cohen
+Faculty Advisor, Data Science Program
+University of West Florida
+
+Dr. Cohen offered academic guidance and provided feedback on this project's development.

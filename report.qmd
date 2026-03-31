@@ -13,16 +13,17 @@ bibliography: references.bib
 link-citations: true
 ---
 
+Slides: [slides.html](slides.html){target="_blank"} 
 
 ## 1. Introduction
 
-Evaluation of credit risk is vital for the financial services industry because, it is required to avoid risks and maintain compliance with regulations, organizations have to accurately predict a borrower's likelihood of failure while re-payment. Typically, the financial institutions have uses methods statistical and rule-based techniques such as logistic regression, scoreboards, and rule-driven decision systems to assess credit score. These traditional methods are in use because those are comparatively clear, simple and easy to predict to stakeholders. Although, typical approaches are difficult to handle data processing in big and multilevel credit dataset. The latest development in machine learning has majorly enhance the capacity to evaluate organized financial data and generate more easy and precise interpretations. Nonlinear patterns and interactions between components that traditional statistical methods can be ignore or  get using machine learning models. In addition to this, the banking sector is going away from complex rule-based frameworks for evaluating credit score to latest improved machine learning  and toward more advanced machine learning systems that provide improved accuracy for prediction (Shreya & Pathak, 2025) @shreya2025explainableartificialintelligencecredit. So, these models are able to provide organizations to effectively analyze enormous quantities of statistical data and provide forecasting of probability of lenders defaulting credit score. 
+Evaluating credit risk is fundamental to the financial services industry, as it ensures regularoty compliance and minimizes potential losses. Traditionally, institutions have relied on statistical and rule-based methods, such as logistic regression and credit scorecards, due to their transparecy and interpretability for stakeholders. However, these classical approaches often struggle with the complexity of modern, multi-level datasets. In contrast, recent advancements in machine learning (ML) have significantly enhanced the ability to process large-scale financial data. Unlike traditional models, ML can identify non-linear patterns and complex interactions that are often overlooked. As the banking sector shifts away from rigid rule-based frameworks toward these advanced predictive systems, organizations can now analyze vast quantities of data to more accurately forecast default probabilities. (Shreya & Pathak, 2025) @shreya2025explainableartificialintelligencecredit
 
 Many machine learning models are frequently getting attacked for being inaccessible even though having their predictive benefits. Because the in built decision-making system is hard to understand, complex algorithms like deep learning models and collective learning techniques are often referred to as "black box" mechanism. This lack of interpretability poses significant problems in highly regulated industries like banking and finance. So the majorly regulated organizations like financial services and banking  get into vital issues due to absence of predictability in the process. Nowadays, there is a need  for financial organizations have to ensure integrity in borrowing processes and offer explanations for automatic verdicts. According to Bussmann et al. (2020) @bussmann2021explainable, explainability is crucial for credit risk management as companies need to be able to explain and give the exact justification model predictions to stakeholders, consumers, and regulators. Similarly, de Lange et al. (2022) @de2022explainable emphasize in his paper the meaning of the "right to explanation," which allows organizations to provide comprehensible explanations for machine credit assessments.
 
 Nowadays, Explainable Artificial Intelligence (XAI) approaches are extensively used by working professionals  and researchers  mainly to improve the easy accessibility of machine learning models for to overcome this obstacles. The goal of explainable  methods is to give insights on how models provide results while ensuring high accuracy in forecasting. Oyeyemi et al. (2025) @oyeyemiexplainable claim that by combining explainable AI method with machine learning models, businesses can make an algorithm that are precise and easy to understand, boosting confidence in digital automatic economic decision-making system. Additionally,  recent research also shows the how artificial intelligence in advancing help credit decisions-making process with their developing role for different financial  organizations across the globe. In one example, McKinsey & Company (2025) @Nuzzo_Kremer_Tavakol_Harreis describes how AI-driven solutions are transforming the entire credit process by improving automatic decision-making and more efficient data analysis. In a similar vein, Kubam (2024) @kubam2025agentic focuses attention to new cognitive credit assessment platforms that allow for real-time decision-making about finances by merging technology with comprehension. So, these modern advancements indicates how credit risk management techniques plays vital role in bringing together straight decision structures with complex data assess technology for today. 
 
-In this study, the Light Gradient Boosting Machine (LightGBM) algorithm uses to create an explainable credit risk assessment system. LightGBM is a dynamic gradient boosting method that is now commonly used in machine learning applications because of it has excellent predictive accuracy, adaptability, as well as efficiency when dealing with hierarchical datasets. The approch model is applied to a credit risk dataset that includes customer income, history of credit, and demographic information such as address and travel history. It is built in Python. The main goals of this model are predicting the possibility of defaulters who are failing to pay loans and  highlighting the important factors which are affecting on credit risk result. 
+In this study, the Light Gradient Boosting Machine (LightGBM) algorithm is used to create an explainable credit risk assessment system. LightGBM is a dynamic gradient boosting method commonly used in machine learning applications because its excellent predictive accuracy, adaptability, as well as efficiency when dealing with hierarchical datasets. The approch model is applied to a credit risk dataset that includes customer income, history of credit, and demographic information such as address and travel history. It is built in Python. The main goals of this model are predicting the possibility of defaulters who are failing to pay loans and  highlighting the important factors which are affecting on credit risk result. 
 
 This research uses SHAP (SHapley Additive Explanations), an explainable method that evaluates each feature's role in contribution to the model result to evaluate machine learning projections and improve model accessibility. Here the benefit of SHAP are both local interpretability, which explains particular forecasts, and global interpretability, which explains overall characteristic significance throughout the dataset. The suggested structure is for both exact credit risk forecasting and insightful statistical model analysis by integrating LightGBM with SHAP explanations methods.The recommended credit risk evaluation methodology has some important steps.
 
@@ -166,21 +167,20 @@ credit1 = pd.read_csv(credit_path)
 
 This project research is using the Credit Risk Dataset, which contains 32,581 borrower records and twelve variables related to financial, credit history, and demographic details. A borrower's likelihood of defaulting (1) or not (0) is indicated by the binary target variable loan_status. The dataset includes both quantitative and qualitative factors, including income, loan amount, interest rate, length of work, home ownership status, and loan purpose. It is perfect for applying LightGBM and evaluating explainable.
 
-
-| Feature | Count | Unique | Top | Freq | Mean | Std Dev | Min | 25% | 50% | 75% | Max |
-|----------|--------|--------|------|------|--------|---------|------|------|------|------|------|
-| person_age | 32581 | – | – | – | 27.73 | 6.35 | 20 | 23 | 26 | 30 | 144 |
-| person_income | 32581 | – | – | – | 66074.85 | 61983.12 | 4000 | 38500 | 55000 | 79200 | 6000000 |
-| person_home_ownership | 32581 | 4 | RENT | 16446 | – | – | – | – | – | – | – |
-| person_emp_length | 31686 | – | – | – | 4.79 | 4.14 | 0 | 2 | 4 | 7 | 123 |
-| loan_intent | 32581 | 6 | EDUCATION | 6453 | – | – | – | – | – | – | – |
-| loan_grade | 32581 | 7 | A | 10777 | – | – | – | – | – | – | – |
-| loan_amnt | 32581 | – | – | – | 9589.37 | 6322.09 | 500 | 5000 | 8000 | 12200 | 35000 |
-| loan_int_rate | 29465 | – | – | – | 11.01 | 3.24 | 5.42 | 7.90 | 10.99 | 13.47 | 23.22 |
-| loan_status | 32581 | – | – | – | 0.22 | 0.41 | 0 | 0 | 0 | 0 | 1 |
-| loan_percent_income | 32581 | – | – | – | 0.17 | 0.11 | 0.00 | 0.09 | 0.15 | 0.23 | 0.83 |
-| cb_person_default_on_file | 32581 | 2 | N | 26836 | – | – | – | – | – | – | – |
-| cb_person_cred_hist_length | 32581 | – | – | – | 5.80 | 4.06 | 2 | 3 | 4 | 8 | 30 |
+| Variable | Description |
+|----------|-------------|
+| person_age | Age of the borrower (years). |
+| person_income | Annual income of the borrower. |
+| person_home_ownership | Housing status (rent, own, mortgage). |
+| person_emp_length | Employment duration in years. |
+| loan_intent | Purpose of the loan. |
+| loan_grade | Risk grade assigned to the loan. |
+| loan_amnt | Loan amount requested. |
+| loan_int_rate | Interest rate applied to the loan. |
+| loan_status | Loan outcome (0 = Non-default, 1 = Default). |
+| loan_percent_income | Loan amount as a percentage of income. |
+| cb_person_default_on_file | Previous default record (Yes/No). |
+| cb_person_cred_hist_length | Length of credit history (years). |
 
 <br>
 **Dataset Dimensions** -
@@ -278,6 +278,7 @@ When continuing in to the encoding and analysis steps, it works as an assessment
 #| code-fold: true
 #| warning: false
 #| message: false
+#| output: false
 import pandas as pd
 
 # Show all columns
@@ -301,6 +302,25 @@ print(desc.to_string())
 
 ```
 
+<div style="width:70%; margin:auto; font-family:monospace; font-size:0.7em;">
+
+| Feature | Cnt | Unq | Top | Frq | Mean | SD | Min | Q1 | Med | Q3 | Max |
+|---------|-----|-----|-----|-----|------|----|-----|----|-----|----|-----|
+| person_age | 5 | – | – | – | 23.0 | 1.58 | 21 | 22 | 23 | 24 | 25 |
+| person_income | 5 | – | – | – | 47800.0 | 26904.7 | 9600 | 9600 | 54400 | 59000 | 65500 |
+| person_home_ownership | 5 | 4 | 3 | 3 | – | – | 0 | 2 | 3 | 3 | 3 |
+| person_emp_length | 5 | – | – | – | 28.2 | 53.0 | 1 | 4 | 5 | 8 | 123 |
+| loan_intent | 5 | 4 | 3 | 1 | – | – | 1 | 3 | 3 | 4 | 4 |
+| loan_grade | 5 | 3 | 2 | 1 | – | – | 1 | 2 | 2 | 3 | 3 |
+| loan_amnt | 5 | – | – | – | 22800.0 | 13669.0 | 1000 | 5500 | 35000 | 35000 | 35000 |
+| loan_int_rate | 5 | – | – | – | 14.70 | 1.92 | 11.14 | 12.87 | 14.27 | 15.23 | 16.02 |
+| loan_status | 5 | – | – | – | 0.8 | 0.42 | 0 | 0 | 1 | 1 | 1 |
+| loan_%inc | 5 | – | – | – | 0.47 | 0.22 | 0.10 | 0.53 | 0.55 | 0.57 | 0.59 |
+| prev_default | 5 | 2 | 1 | 3 | – | – | 0 | 0 | 0 | 1 | 1 |
+| cred_hist_len | 5 | – | – | – | 2.83 | 0.98 | 2 | 2 | 3 | 3 | 4 |
+
+</div>
+
 #### 3.4.3 Encoding Categorical Variables :
 Here, Label encoding uses to transform categorical data, such as property ownership (person_home_ownership) and loan intent (loan_intent), into numerical values to enable machine learning analysis with LightGBM model. 
 When encoding quantitative labels convert into distinct integer variables, then this conversion helps to the model to execute mathematical computations on non-numeric characteristics. The replica of the dataset use to guarantee data accuracy.
@@ -308,6 +328,7 @@ When encoding quantitative labels convert into distinct integer variables, then 
 #| code-fold: true
 #| warning: false
 #| message: false
+#| output: false
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
@@ -330,6 +351,19 @@ table = table.round({'loan_int_rate': 2, 'loan_percent_income': 2, 'person_emp_l
 print(table.to_string(index=False))
 
 ```
+
+<div style="width:80%; margin:auto">
+
+| Age | Income | Home | Emp | Intent | Grade | Loan | Rate | Status | L/Inc | Def | Hist |
+|-----|--------|------|-----|--------|-------|------|------|--------|------|-----|------|
+| 22 | 59000 | 3 | 123 | 4 | 3 | 35000 | 16.02 | 1 | 0.59 | 1 | 3 |
+| 21 | 9600 | 2 | 5 | 1 | 1 | 1000 | 11.14 | 0 | 0.10 | 0 | 2 |
+| 25 | 9600 | 0 | 1 | 3 | 2 | 5500 | 12.87 | 1 | 0.57 | 0 | 3 |
+| 23 | 65500 | 3 | 4 | 3 | 2 | 35000 | 15.23 | 1 | 0.53 | 0 | 2 |
+| 24 | 54400 | 3 | 8 | 3 | 2 | 35000 | 14.27 | 1 | 0.55 | 1 | 4 |
+
+</div>
+
 
 #### 3.4.4 Splitting Dataset (Test and Training Subset) :
 This study divides the credit dataset into training and testing subsets to assess the predictive accuracy of the model. The feature variables are stored in X and the target variable loan_status is recorded in y. This split uses 80% of the data for training and 20% for testing purpose the train_test_split() function, so this  model assess on data that has not been tested.
@@ -760,44 +794,91 @@ shap.summary_plot(
 The SHAP bar plot indicates the average effect of each feature on the LightGBM model’s predictions on credit risk. Features with long bars indicate more influence on the classification of customers as high-risk or low-risk. So, plot shows the person_icome and loan amount are the most influential factors while assessing the credit risk. This improves the transparency of the model and reveals which features have the greatest influence on credit risk.
 ```{python}
 import shap
+import matplotlib.pyplot as plt
 
-# SHAP bar plot 
+# Generate the plot
 shap.summary_plot(
     shap_values, 
     X_test, 
     plot_type="bar",
-    color="#587597" 
+    color="#587597",
+    show=False 
 )
+
+plt.xlabel("Feature Importance (SHAP)")
+
+plt.show()
 ```
 
 #### SHAP Dependence Plot
 The dependence plot of SHAP provides information about the effect of the loan_amnt feature on the predictions of the model regarding the credit risk. Each point in the plot represents a borrower, and the position of the point provides information about the effect of the loan_amnt feature.
+
 ```{python}
+#| label: shap-dependence
+#| fig-cap: "Effect of Loan Amount on Predicted Credit Risk"
+
 import shap
-# Dependence plot for 'loan_amnt' 
+import matplotlib.pyplot as plt
+
 shap.dependence_plot(
     "loan_amnt",
     shap_values,
     X_test,
-    interaction_index=None, 
-    color="#587597"
+    interaction_index=None,
+    show=False
 )
+
+# Apply styling to the axis SHAP 
+plt.gcf().set_size_inches(10, 5) 
+plt.xlabel("Loan Amount Requested ($)", fontsize=12, fontweight='bold')
+plt.ylabel("Impact on Prediction", fontsize=12, fontweight='bold')
+plt.title("Loan Amount Impact", fontsize=14, fontweight='bold')
+
+plt.tight_layout()
+plt.show()
 ```
 
 #### SHAP Force Plot (Individual Prediction)
 The SHAP force plot gives a detailed explanation of the prediction made by the model for the individual borrower. It shows the contribution of each feature in increasing or decreasing the predicted credit risk for the borrower compared to the model’s prediction. Features that contribute to increasing the prediction of credit risk increase the model’s output, whereas those that contribute to decreasing the prediction of credit risk decrease the model’s output.
 ```{python}
-import shap
+#| label: shap-force-plot-ultra-tall
+#| code-fold: true
+#| fig-width: 20
+#| fig-height: 18
 
+import shap
+import matplotlib.pyplot as plt
+
+# Clear figure
+plt.clf()
+
+# Generate the plot
 shap.force_plot(
-    explainer.expected_value,
-    shap_values[0],
-    X_test.iloc[0],
-    matplotlib=True
+    explainer.expected_value, 
+    shap_values[0], 
+    X_test.iloc[0], 
+    matplotlib=True, 
+    show=False
 )
+
+# Force massive vertical dimensions
+fig = plt.gcf()
+fig.set_size_inches(20, 18) 
+
+# Get current axis and stretch the vertical view
+# This forces the "arrows" to fill the 18-inch height
+ax = plt.gca()
+ax.set_ylim(-1.0, 1.0) 
+
+# Font size 
+plt.rcParams.update({'font.size': 14})
+
+plt.tight_layout()
+plt.show()
 ```
 
 ## 4. Conclusion
+This study aims to create an explainable credit risk prediction model using the LightGBM machine learning algorithm and the SHAP value technique to improve the interpretability of the model using for research. The credit risk dataset is then utilized to predict the probability of default risk using the above machine learning model. Accuracy, precision, recall, F1 score, and ROC AUC value are the evaluation criteria to assess the performance of the proposed model. From the experiment, the proposed machine learning model is capable of detecting high-risk borrowers while providing high performance in the prediction results. Additionally, the SHAP value technique is utilized to provide transparency to the machine learning model by indicating the contribution of each feature, including the loan amount, income, and credit history, to the prediction results.
 
 
 ## 5. References
