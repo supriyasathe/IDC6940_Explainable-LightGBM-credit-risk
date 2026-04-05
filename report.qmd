@@ -767,7 +767,7 @@ plt.show()
 
 As shown in the comparison between the base LightGBM model and the tuned LightGBM model, hyperparameter tuning has a positive impact on the performance of the model. The accuracy of the model increase from 84.21% to 93.57%, precision from 80.12% to 97.90%, and ROC-AUC from 0.8910 to 0.9503, which indicates that the reliability of the model in detecting risky borrowers has increased. The F1 score of the model has also rise up, which indicates a good balance between precision and recall, though the recall slightly decreases.
 
-#### 3.4.8 Explainable AI using SHAP
+#### 3.4.8 Explainable machine learning using SHAP
 
 #### SHAP Explainer & summary plot
 In order to achieve transparency in the "black-box" approach of the LightGBM model, SHAP (SHapley Additive exPlanations) was used to evaluate the contribution of each feature in the final credit risk prediction model. 

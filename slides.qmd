@@ -1,7 +1,7 @@
 ---
-title: "Present a great story for data science projects"
-subtitle: "This is a Slide Template"
-author: "Students names (Advisor: Dr. Cohen)"
+title: "Explainable Credit Risk Assessment using LightGBM"
+
+author: "Supriya Sathe (Advisor: Dr. Cohen)"
 date: '`r Sys.Date()`'
 format:
   revealjs
@@ -18,32 +18,71 @@ editor:
 ---
 
 ::: callout-important
-**Remember:** Your goal is to make your audience understand and care
-about your findings. By crafting a compelling story, you can effectively
-communicate the value of your data science project.
-
-Carefully read this template since it has instructions and tips to
-writing!
+**Remember:** Demonstrate how machine learning and explainable AI can improve
+credit risk prediction while maintaining transparency in financial
+decision-making.
 
 More information about `revealjs`:
 <https://quarto.org/docs/reference/formats/presentations/revealjs.html>
 :::
 
-## Introduction  {.smaller}
+## 1. Introduction  {.smaller}
 
-In financial institutions, evaluating credit risk is essential since it has a direct bearing on lending choices, portfolio performance, and regulatory compliance. The simplicity and interpretability of traditional credit scoring models, including logistic regression, have led to their widespread use. Unfortunately, these models are less successful due to the increasing number and complexity of financial data, as they are unable to capture complicated borrower behavior and non-linear correlations. 
-Credit risk prediction has been greatly enhanced by recent developments in machine learning, particularly ensemble techniques like Gradient Boosting Decision Trees. Large, high-dimensional, and unbalanced credit datasets can be handled using the scalable and potent Light Gradient Boosting Machine (LightGBM) model. LightGBM is frequently regarded as a black-box approach, which restricts transparency and erodes confidence among regulators and business users despite its impressive performance.
-This study suggests an Explainable Agentic AI framework for credit risk assessment utilizing LightGBM in order to overcome these issues. An intelligent agentic decision layer that can read predictions, produce explanations, and suggest actions is combined with LightGBM and SHAP-based explainability. The system seeks to promote responsible and explicable credit judgments in regulated financial contexts by combining accuracy, transparency, and adaptive decision-making.
+The need for assessing credit risks is essential for banks to determine their potential defaulter customers and take decisions regarding loan issuance. While traditional models, such as logistic regression, are quite simple, they lack the ability to capture intricate patterns that may exist within vast amounts of financial data. However, while machine learning algorithms, such as LightGBM, have superior predictive capability, they tend to lack clarity since they are difficult to interpret.
 
-## Methods
+## 2. Methods (LightGBM)
 
--   Detail the models or algorithms used.
+LightGBM Model assumes that the credit risk can be treated as a binary classification problem.
 
--   Justify your choices based on the problem and data.
+LightGBM Logic: This technique constructs trees progressively while minimizing the value of a loss function. The ultimate result is the combination of all the trees :
+
+$$\hat{y}_i = \sum_{k=1}^K f_k(x_i)$$
+
+SHAP Values: Based on Cooperative Game Theory, SHAP breaks down the prediction as follows:
+
+$$f(x) = \phi_0 + \sum_{j=1}^M \phi_j$$
 
 
+## 3. Analysis and Results
 
-## Data Exploration and Visualization
+### 3.1 Data Preprocessing 
+The dataset with 32,581 observations contains both financial, credit, and demographic attributes. The preprocessing process involves the following:
+
+Handling Missing Values - Median replacement of variables like person_emp_length and loan_int_rate.
+Categorical Variable Labeling - Labeling the categorical variables like loan_intent and person_home_ownership.
+Separating Independent and Dependent Variables - X represents independent variables, whereas y represents dependent variable loan_status.
+Training and Testing Data Split - Training data consists of 80% observations, and testing data includes 20% observations.
+
+## 3.Analysis and Results
+
+### **3.2. Dataset Visualization**
+
+```{python}
+#| label: corr-heatmap
+#| fig-cap: "Correlation Heatmap of Numerical Features"
+
+library(ggplot2)
+library(reshape2)
+
+# Select numeric columns
+num_data <- credit_data %>% select(person_age, person_income, person_emp_length, loan_amnt, loan_int_rate, loan_%inc, cred_hist_len)
+
+# Compute correlation matrix
+corr_mat <- round(cor(num_data, use="complete.obs"), 2)
+melted_corr <- melt(corr_mat)
+
+# Plot heatmap
+ggplot(melted_corr, aes(x=Var1, y=Var2, fill=value)) +
+  geom_tile(color="white") +
+  scale_fill_gradient2(low="blue", high="red", mid="white", midpoint=0, limit=c(-1,1)) +
+  theme_minimal() +
+  labs(title="Correlation Heatmap of Numerical Features", x="", y="") +
+  geom_text(aes(label=value), color="black", size=3) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
 
 -   Describe your data sources and collection process.
 
@@ -51,9 +90,11 @@ This study suggests an Explainable Agentic AI framework for credit risk assessme
 
 -   Highlight unexpected patterns or anomalies.
 
+
+
 ## Data Exploration and Visualization {.smaller}
 
-A study was conducted to determine how...
+
 
 ```{r, warning=FALSE, echo=F, message=FALSE}
 # loading packages 
