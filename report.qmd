@@ -302,17 +302,17 @@ print(desc.to_string())
 
 ```
 
-<div style="width:70%; margin:auto; font-family:monospace; font-size:0.7em;">
+<div style="width:70%; margin:auto; font-family:'Segoe UI', sans-serif; font-size:0.7em;">
 
 | Feature | Cnt | Unq | Top | Frq | Mean | SD | Min | Q1 | Med | Q3 | Max |
-|---------|-----|-----|-----|-----|------|----|-----|----|-----|----|-----|
+|:-------|:--:|:--:|:--:|:--:|----:|----:|----:|----:|----:|----:|----:|
 | person_age | 5 | – | – | – | 23.0 | 1.58 | 21 | 22 | 23 | 24 | 25 |
-| person_income | 5 | – | – | – | 47800.0 | 26904.7 | 9600 | 9600 | 54400 | 59000 | 65500 |
+| person_income | 5 | – | – | – | 47800 | 26904.7 | 9600 | 9600 | 54400 | 59000 | 65500 |
 | person_home_ownership | 5 | 4 | 3 | 3 | – | – | 0 | 2 | 3 | 3 | 3 |
 | person_emp_length | 5 | – | – | – | 28.2 | 53.0 | 1 | 4 | 5 | 8 | 123 |
 | loan_intent | 5 | 4 | 3 | 1 | – | – | 1 | 3 | 3 | 4 | 4 |
 | loan_grade | 5 | 3 | 2 | 1 | – | – | 1 | 2 | 2 | 3 | 3 |
-| loan_amnt | 5 | – | – | – | 22800.0 | 13669.0 | 1000 | 5500 | 35000 | 35000 | 35000 |
+| loan_amnt | 5 | – | – | – | 22800 | 13669 | 1000 | 5500 | 35000 | 35000 | 35000 |
 | loan_int_rate | 5 | – | – | – | 14.70 | 1.92 | 11.14 | 12.87 | 14.27 | 15.23 | 16.02 |
 | loan_status | 5 | – | – | – | 0.8 | 0.42 | 0 | 0 | 1 | 1 | 1 |
 | loan_%inc | 5 | – | – | – | 0.47 | 0.22 | 0.10 | 0.53 | 0.55 | 0.57 | 0.59 |
@@ -320,6 +320,7 @@ print(desc.to_string())
 | cred_hist_len | 5 | – | – | – | 2.83 | 0.98 | 2 | 2 | 3 | 3 | 4 |
 
 </div>
+
 
 #### 3.4.3 Encoding Categorical Variables :
 Here, Label encoding uses to transform categorical data, such as property ownership (person_home_ownership) and loan intent (loan_intent), into numerical values to enable machine learning analysis with LightGBM model. 
@@ -825,57 +826,57 @@ shap.dependence_plot(
     shap_values,
     X_test,
     interaction_index=None,
+    color="#587597",
     show=False
 )
 
-# Apply styling to the axis SHAP 
-plt.gcf().set_size_inches(10, 5) 
+# Apply styling to the axis
+plt.gcf().set_size_inches(10, 5)
 plt.xlabel("Loan Amount Requested ($)", fontsize=12, fontweight='bold')
 plt.ylabel("Impact on Prediction", fontsize=12, fontweight='bold')
 plt.title("Loan Amount Impact", fontsize=14, fontweight='bold')
 
 plt.tight_layout()
 plt.show()
+
 ```
 
 #### SHAP Force Plot (Individual Prediction)
-The SHAP force plot gives a detailed explanation of the prediction made by the model for the individual borrower. It shows the contribution of each feature in increasing or decreasing the predicted credit risk for the borrower compared to the model’s prediction. Features that contribute to increasing the prediction of credit risk increase the model’s output, whereas those that contribute to decreasing the prediction of credit risk decrease the model’s output.
+The Shapley Waterfall Plot helps in understanding how each individual variable contributes to the overall predicted credit risk score for a particular client. The baseline is set to start from the overall predicted value, and depending on the Shapley value for the respective variable, the probabilities either increase or decrease.
+
 ```{python}
-#| label: shap-force-plot-ultra-tall
-#| code-fold: true
-#| fig-width: 20
-#| fig-height: 18
+#| label: shap-waterfall
+#| fig-cap: "Feature Contributions to Individual Credit Risk Prediction"
 
 import shap
 import matplotlib.pyplot as plt
 
-# Clear figure
-plt.clf()
+# Create SHAP explainer
+explainer = shap.Explainer(best_model, X_train)
 
-# Generate the plot
-shap.force_plot(
-    explainer.expected_value, 
-    shap_values[0], 
-    X_test.iloc[0], 
-    matplotlib=True, 
-    show=False
-)
+# Compute SHAP values
+shap_values = explainer(X_test)
 
-# Force massive vertical dimensions
-fig = plt.gcf()
-fig.set_size_inches(20, 18) 
+# Select a single borrower example
+sample_index = 0
 
-# Get current axis and stretch the vertical view
-# This forces the "arrows" to fill the 18-inch height
-ax = plt.gca()
-ax.set_ylim(-1.0, 1.0) 
+# Set large figure size
+plt.figure(figsize=(10,6))
 
-# Font size 
-plt.rcParams.update({'font.size': 14})
+# Generate waterfall plot
+shap.plots.waterfall(shap_values[sample_index], show=False)
+
+# Add labels
+plt.xlabel("SHAP Value (Impact on Predicted Credit Risk)", fontsize=10, fontweight="bold")
+plt.ylabel("Model Features", fontsize=12, fontweight="bold")
+
+plt.title("SHAP Waterfall Plot: Individual Credit Risk Prediction", fontsize=12, fontweight="bold")
 
 plt.tight_layout()
 plt.show()
+
 ```
+
 
 ## 4. Conclusion
 This study aims to create an explainable credit risk prediction model using the LightGBM machine learning algorithm and the SHAP value technique to improve the interpretability of the model using for research. The credit risk dataset is then utilized to predict the probability of default risk using the above machine learning model. Accuracy, precision, recall, F1 score, and ROC AUC value are the evaluation criteria to assess the performance of the proposed model. From the experiment, the proposed machine learning model is capable of detecting high-risk borrowers while providing high performance in the prediction results. Additionally, the SHAP value technique is utilized to provide transparency to the machine learning model by indicating the contribution of each feature, including the loan amount, income, and credit history, to the prediction results.

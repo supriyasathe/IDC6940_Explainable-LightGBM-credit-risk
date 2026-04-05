@@ -10,7 +10,9 @@ Linkedin ID : Supriya Sathe (https://www.linkedin.com/in/supriya-sathe-968412162
 ### Advisor 
 
 Dr. Cohen
+<br>
 Faculty Advisor, Data Science Program
+<br>
 University of West Florida
 
 Dr. Cohen offered academic guidance and provided feedback on this project's development.
