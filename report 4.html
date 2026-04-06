@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Supriya Sathe (Advisor: Dr.&nbsp;Cohen)">
+
+<title>Explainable Credit Risk Assessment using LightGBM – Credit Risk Assessment using LightGBM</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ff63373b1067ca6f91cf1456aa1f00a2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Credit Risk Assessment using LightGBM</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./literature.html"> 
+<span class="menu-text">Literature</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./report.html" aria-current="page"> 
+<span class="menu-text">Report</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://github.com/supriyasathe/IDC6940_LightGBM-agentic-ai-credit-risk" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">1. Introduction</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">2. Methods</a>
+  <ul class="collapse">
+  <li><a href="#mathematical-fundamentals" id="toc-mathematical-fundamentals" class="nav-link" data-scroll-target="#mathematical-fundamentals">2.1 Mathematical Fundamentals</a></li>
+  <li><a href="#assumptions" id="toc-assumptions" class="nav-link" data-scroll-target="#assumptions">2.2 Assumptions</a></li>
+  <li><a href="#model-evaluation-metrics" id="toc-model-evaluation-metrics" class="nav-link" data-scroll-target="#model-evaluation-metrics">2.3 Model Evaluation Metrics</a></li>
+  <li><a href="#lightgbm-model-implementation-in-python" id="toc-lightgbm-model-implementation-in-python" class="nav-link" data-scroll-target="#lightgbm-model-implementation-in-python">2.4 LightGBM Model Implementation in Python</a></li>
+  </ul></li>
+  <li><a href="#analysis-and-results" id="toc-analysis-and-results" class="nav-link" data-scroll-target="#analysis-and-results">3. Analysis and Results</a>
+  <ul class="collapse">
+  <li><a href="#data-ingestion" id="toc-data-ingestion" class="nav-link" data-scroll-target="#data-ingestion">3.1 Data Ingestion :</a></li>
+  <li><a href="#data-description" id="toc-data-description" class="nav-link" data-scroll-target="#data-description">3.2 Data Description :</a></li>
+  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">3.3 Packages :</a></li>
+  <li><a href="#exploratory-data-analysis-eda" id="toc-exploratory-data-analysis-eda" class="nav-link" data-scroll-target="#exploratory-data-analysis-eda">3.4 Exploratory Data Analysis (EDA) :</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">4. Conclusion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">5. References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Explainable Credit Risk Assessment using LightGBM</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p><a href="https://github.com/supriyasathe">Supriya Sathe (Advisor: Dr.&nbsp;Cohen)</a> </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Slides: <a href="slides.html" target="_blank">slides.html</a></p>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">1. Introduction</h2>
+<p>Evaluating credit risk is fundamental to the financial services industry, as it ensures regularoty compliance and minimizes potential losses. Traditionally, institutions have relied on statistical and rule-based methods, such as logistic regression and credit scorecards, due to their transparecy and interpretability for stakeholders. However, these classical approaches often struggle with the complexity of modern, multi-level datasets. In contrast, recent advancements in machine learning (ML) have significantly enhanced the ability to process large-scale financial data. Unlike traditional models, ML can identify non-linear patterns and complex interactions that are often overlooked. As the banking sector shifts away from rigid rule-based frameworks toward these advanced predictive systems, organizations can now analyze vast quantities of data to more accurately forecast default probabilities. (Shreya &amp; Pathak, 2025)<span class="citation" data-cites="shreya2025explainableartificialintelligencecredit"><sup>[<a href="#ref-shreya2025explainableartificialintelligencecredit" role="doc-biblioref">1</a>]</sup></span></p>
+<p>Many machine learning models are frequently getting attacked for being inaccessible even though having their predictive benefits. Because the in built decision-making system is hard to understand, complex algorithms like deep learning models and collective learning techniques are often referred to as “black box” mechanism. This lack of interpretability poses significant problems in highly regulated industries like banking and finance. So the majorly regulated organizations like financial services and banking get into vital issues due to absence of predictability in the process. Nowadays, there is a need for financial organizations have to ensure integrity in borrowing processes and offer explanations for automatic verdicts. According to Bussmann et al.&nbsp;(2020)<span class="citation" data-cites="bussmann2021explainable"><sup>[<a href="#ref-bussmann2021explainable" role="doc-biblioref">2</a>]</sup></span>, explainability is crucial for credit risk management as companies need to be able to explain and give the exact justification model predictions to stakeholders, consumers, and regulators. Similarly, de Lange et al.&nbsp;(2022)<span class="citation" data-cites="de2022explainable"><sup>[<a href="#ref-de2022explainable" role="doc-biblioref">3</a>]</sup></span> emphasize in his paper the meaning of the “right to explanation,” which allows organizations to provide comprehensible explanations for machine credit assessments.</p>
+<p>Nowadays, Explainable Artificial Intelligence (XAI) approaches are extensively used by working professionals and researchers mainly to improve the easy accessibility of machine learning models for to overcome this obstacles. The goal of explainable methods is to give insights on how models provide results while ensuring high accuracy in forecasting. Oyeyemi et al.&nbsp;(2025)<span class="citation" data-cites="oyeyemiexplainable"><sup>[<a href="#ref-oyeyemiexplainable" role="doc-biblioref">4</a>]</sup></span> claim that by combining explainable AI method with machine learning models, businesses can make an algorithm that are precise and easy to understand, boosting confidence in digital automatic economic decision-making system. Additionally, recent research also shows the how artificial intelligence in advancing help credit decisions-making process with their developing role for different financial organizations across the globe. In one example, McKinsey &amp; Company (2025)<span class="citation" data-cites="Nuzzo_Kremer_Tavakol_Harreis"><sup>[<a href="#ref-Nuzzo_Kremer_Tavakol_Harreis" role="doc-biblioref">5</a>]</sup></span> describes how AI-driven solutions are transforming the entire credit process by improving automatic decision-making and more efficient data analysis. In a similar vein, Kubam (2024)<span class="citation" data-cites="kubam2025agentic"><sup>[<a href="#ref-kubam2025agentic" role="doc-biblioref">6</a>]</sup></span> focuses attention to new cognitive credit assessment platforms that allow for real-time decision-making about finances by merging technology with comprehension. So, these modern advancements indicates how credit risk management techniques plays vital role in bringing together straight decision structures with complex data assess technology for today.</p>
+<p>In this study, the Light Gradient Boosting Machine (LightGBM) algorithm is used to create an explainable credit risk assessment system. LightGBM is a dynamic gradient boosting method commonly used in machine learning applications because its excellent predictive accuracy, adaptability, as well as efficiency when dealing with hierarchical datasets. The approch model is applied to a credit risk dataset that includes customer income, history of credit, and demographic information such as address and travel history. It is built in Python. The main goals of this model are predicting the possibility of defaulters who are failing to pay loans and highlighting the important factors which are affecting on credit risk result.</p>
+<p>This research uses SHAP (SHapley Additive Explanations), an explainable method that evaluates each feature’s role in contribution to the model result to evaluate machine learning projections and improve model accessibility. Here the benefit of SHAP are both local interpretability, which explains particular forecasts, and global interpretability, which explains overall characteristic significance throughout the dataset. The suggested structure is for both exact credit risk forecasting and insightful statistical model analysis by integrating LightGBM with SHAP explanations methods.The recommended credit risk evaluation methodology has some important steps.</p>
+<p>The dataset is initially collected and preprocessed by encoding category variables then handling the missing values. The dataset is split into training and testing subsets. After that, the collected training data is utilized to train the LightGBM classification. Later, there are various metrics including accuracy, precision, recall, F1-score, and ROC-AUC are used to determine the model’s forecasting ability for the dataset. For the purpose to assess the forecasts of models and determine the most important variables impacting credit risk, SHAP-based explanations are finally use.</p>
+<p>The objective of this research is to show how new advanced algorithms can work for machine learning and can merge with explainable methodologies to generate efficient, transparent, and consistent credit risk assessment solutions for the system. The suggested model intends to improve transparency of making decisions and aid the banking area in better comprehending the variables influencing customers credit of default by bringing the accessibility that comes from SHAP with the ability to forecast of LightGBM model.</p>
+<hr>
+</section>
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">2. Methods</h2>
+<section id="mathematical-fundamentals" class="level3">
+<h3 class="anchored" data-anchor-id="mathematical-fundamentals">2.1 Mathematical Fundamentals</h3>
+<section id="formulation-of-binary-classification" class="level4">
+<h4 class="anchored" data-anchor-id="formulation-of-binary-classification">2.1.1 Formulation of Binary Classification :</h4>
+<p>Predicting if a borrower will fail to repay on a loan is an issue of binary classification that can be used to generate credit risk prediction. Suppose that the dataset is defined as where each observation <span class="math inline">\((x_i, y_i)\)</span> has a feature vector <span class="math inline">\((x_i)\)</span> and a target label <span class="math inline">\(y_i \in \{0, 1\}\)</span> representing low or high risk (Default/Non-default). The predicted probability of default is: <span class="math display">\[\hat{y}_i = P(y_i = 1 | x_i)\]</span></p>
+</section>
+<section id="gradient-boosting-model-equation" class="level4">
+<h4 class="anchored" data-anchor-id="gradient-boosting-model-equation">2.1.2 Gradient Boosting Model Equation :</h4>
+<p>In this study predictive model is use based on gradient boosting and uses LightGBM in its implementation. To boost the precision of forecasts, the model integrates many decision trees: <span class="math display">\[f(x) = \sum_{k=1}^{K} f_k(x)\]</span></p>
+<p>where <span class="math inline">\(f_k(x)\)</span> indicates the projection from the k-th decision tree.</p>
+</section>
+<section id="lightgbm-purpose-function" class="level4">
+<h4 class="anchored" data-anchor-id="lightgbm-purpose-function">2.1.3 LightGBM Purpose Function :</h4>
+<p>LightGBM optimizes tree-based models by eliminating both regularization and loss: <span class="math display">\[\mathcal{L} = \sum_{i=1}^{n} l(y_i, \hat{y}_i) + \Omega(f)\]</span></p>
+<p>where , <span class="math inline">\(l(y_i, \hat{y}_i)\)</span> is the loss function here and <span class="math inline">\(\Omega(f)\)</span> is a regularization term that controls the level of complexity of the model.</p>
+</section>
+<section id="shap-explainability-equation" class="level4">
+<h4 class="anchored" data-anchor-id="shap-explainability-equation">2.1.4 SHAP Explainability Equation :</h4>
+<p>This study applies SHAP values from collaborative game theory for analyzing the model predictions. Each characteristic is given a significance evaluation by SHAP that shows how much it contributes to the prediction. The final prediction can be written as: <span class="math display">\[f(x) = \phi_0 + \sum_{j=1}^{p} \phi_j\]</span></p>
+<p>where, <span class="math inline">\(\phi_j\)</span> shows how feature 𝑗 contributed to the prediction.</p>
+</section>
+</section>
+<section id="assumptions" class="level3">
+<h3 class="anchored" data-anchor-id="assumptions">2.2 Assumptions</h3>
+<p>This study focuses on the dataset’s <span class="math inline">\(\mathcal{D} = \{(x_i, y_i)\}_{i=1}^{n}\)</span> exact representation of borrowers demographic and financial details that are important to credit risk prediction. Here <span class="math inline">\(x_i \in \mathbb{R}^p\)</span> is shows borrower characteristics and <span class="math inline">\(y_i \in \{0, 1\}\)</span> indicates the status of a loan.</p>
+<p><br> Perhaps the conditional likelihood <span class="math inline">\(P(y=1|x)\)</span> can be calculated using machine learning models like LightGBM, Random Forest, and Logistic Regression. It is assumed this characteristic parameters have little multicollinearity as well as significant associations with the target variable.</p>
+<p><br> The corresponding function is obtained by the models <span class="math inline">\(f(x): \mathcal{X} \to \mathcal{Y}\)</span> that minimizes a loss function <span class="math inline">\(L(y, f(x))\)</span> during model training.</p>
+<p><br> Finally, SHAP values <span class="math inline">\(\phi_i\)</span> are considered to give insightful explanations by calculating each characteristic’s influence to the model’s predictions.</p>
+</section>
+<section id="model-evaluation-metrics" class="level3">
+<h3 class="anchored" data-anchor-id="model-evaluation-metrics">2.3 Model Evaluation Metrics</h3>
+<p>This study use a variety of evaluation parameters to develope the unbalanced financial information to evaluate the LightGBM classification accuracy on this credit risk dataset. These measures give multiple perspectives of model performance because a negative outcome (being unable to identify a defaulting borrower) is much more expensive for a bank than an inaccurate positive.</p>
+<section id="accuracy" class="level4">
+<h4 class="anchored" data-anchor-id="accuracy">2.3.1 Accuracy</h4>
+<p>The proportion of accurately expected instances to all instances is called accuracy. For this dataset, a “dumb” model that predicts “No Default” for all individuals would however obtain accuracy, given its appealing nature. <span class="math display">\[
+\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+\]</span></p>
+</section>
+<section id="recall-sensitivity" class="level4">
+<h4 class="anchored" data-anchor-id="recall-sensitivity">2.3.2 Recall (Sensitivity)</h4>
+<p>For this study, recall is an important statistic. It evaluates how well the model can find every possible defaulting member. High recall assures that the model identifies the highest percentage of instances of high risk for our dataset, where the “Default” category is the low-risk. <span class="math display">\[
+\text{Recall} = \frac{TP}{TP + FN}
+\]</span></p>
+</section>
+<section id="precision" class="level4">
+<h4 class="anchored" data-anchor-id="precision">2.3.3 Precision</h4>
+<p>Precision in credit risk relates to the percentage of expected defaults that really occurred. High accuracy maintains relationships with clients sustained by avoiding the bank from prematurely rejecting credit to “secure” borrowers. <span class="math display">\[
+\text{Precision} = \frac{TP}{TP + FP}
+\]</span></p>
+</section>
+<section id="f1-score" class="level4">
+<h4 class="anchored" data-anchor-id="f1-score">2.3.4 F1-Score</h4>
+<p>Precision and recall’s harmonic median is the F1-Score. It presents an equal compromise between the two, which is important considering the conflict between ignoring inadequate credit (Recall) and refusing outstanding ones (Precision). <span class="math display">\[
+F_1 = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+\]</span></p>
+</section>
+<section id="roc-auc" class="level4">
+<h4 class="anchored" data-anchor-id="roc-auc">2.3.5 ROC-AUC</h4>
+<p>The model’s capacity to classify between classes over all potential thresholds is by the Area Under the Receiver Operating Features Curve (ROC-AUC). The model uses particular likelihood threshold used, a high ROC-AUC (e.g., <span class="math inline">\(&gt; 0.90\)</span>) in this credit assessment shows that the model is efficient at rating a random defaulting customer higher than a random non-defaulter.</p>
+</section>
+</section>
+<section id="lightgbm-model-implementation-in-python" class="level3">
+<h3 class="anchored" data-anchor-id="lightgbm-model-implementation-in-python">2.4 LightGBM Model Implementation in Python</h3>
+<p>Light Gradient Boosting Machine (LightGBM) is a model developed based on the gradient boosting principle, which combines a number of decision trees sequentially to achieve a higher accuracy level. The next tree is trained to reduce the error made by the preceding trees by optimizing a loss function. The prediction value can be defined as: <span class="math display">\[
+F(x) = \sum_{k=1}^{K} f_k(x)
+\]</span></p>
+<p>where <span class="math inline">\(F(x)\)</span>. is the final prediction, <span class="math inline">\(f_k(x)\)</span> is the prediction from the <span class="math inline">\(k\)</span>-th decision tree, and <span class="math inline">\(K\)</span> is the total number of trees in the ensemble model. The model adds trees sequentially in order to minimize the total prediction error. A Light Gradient Boosting Machine (LightGBM) classifier was utilized to implement the predictive credit risk model using Python programming. The LightGBM algorithm was trained with the prepared data set after converting the categorical variables into appropriate data types and splitting the data set into training and testing data sets. The LightGBM model was chosen due to its efficiency and capacity to handle nonlinear relationships. A LightGBMClassifier was utilized to train the model with the prepared data set. Various metrics were applied to evaluate the model’s efficiency.</p>
+<section id="hyperparameter-selection" class="level4">
+<h4 class="anchored" data-anchor-id="hyperparameter-selection">2.4.1 Hyperparameter Selection :</h4>
+<p>To improve the LightGBM model’s predictive capacity for credit risk classification, hyperparameter tuning was also done. In this research study, key parameters like the learning rate, maximum depth, estimators, and number of leaves were tuned and optimized to improve the predictive ability of the model. This was done using a technique known as GridSearchCV with three-fold cross-validation. The optimal parameters, such as a rate of learning of 0.05, maximum depth of 6, estimators of 200, and number of leaves of 31, were improved to enhance the model’s forecasting capacity and generalization performance for credit risk data that had not yet been determined.</p>
+</section>
+<section id="shap-integration" class="level4">
+<h4 class="anchored" data-anchor-id="shap-integration">2.4.2 SHAP Integration :</h4>
+<p>SHAP (SHapley Additive Explanations) was added to the LightGBM credit risk model to improve its interpretability even more. For the purpose of to estimate default risks, SHAP values—which are developed from cooperative game theory—offer a means of assessing the value of contributions made by characteristics such as the borrower’s income level, loan amount, and length of credit record. The following formula can be used to express the forecast result: <span class="math display">\[f(x) = \phi_0 + \sum_{j=1}^{M} \phi_j\]</span></p>
+<p>where <span class="math inline">\(f(x)\)</span> indicates the borrower’s expected likelihood of loan default,<span class="math inline">\(\phi_0\)</span> is the average model forecast, or base value, <span class="math inline">\(M\)</span> is the total number of features, and <span class="math inline">\(\phi_j\)</span> is the SHAP value that shows how feature <span class="math inline">\(j\)</span> related to the projection. Positive SHAP values increase the probability of default, while negative values decrease it. This technique offers a way to provide both global explanations in terms of feature importance rankings and local explanations for individual predictions on borrowers.</p>
+</section>
+</section>
+</section>
+<section id="analysis-and-results" class="level2">
+<h2 class="anchored" data-anchor-id="analysis-and-results">3. Analysis and Results</h2>
+<section id="data-ingestion" class="level3">
+<h3 class="anchored" data-anchor-id="data-ingestion">3.1 Data Ingestion :</h3>
+<p>The pandas package in Python was used to load the dataset and skimpy package is to get consice exploratory summeries. A dataframe called credit1 was created by reading the file credit_risk_dataset .csv. The dataset was first explored by examining column data types, previewing the first few records, data analysis and determining its dimensions. To guarantee effective ingestion and comprehend variable composition, the dataset structure was validated using the .shape(), .head(), and.info() functions.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> skimpy <span class="im">import</span> skim</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_git_root(start<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> start <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        start <span class="op">=</span> os.getcwd()</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> os.path.abspath(start)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> os.path.isdir(os.path.join(path, <span class="st">".git"</span>)):</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> path</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        parent <span class="op">=</span> os.path.dirname(path)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> parent <span class="op">==</span> path:</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">raise</span> <span class="pp">FileNotFoundError</span>(<span class="st">"No .git directory found — are you inside a Git repository?"</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        path <span class="op">=</span> parent</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>repo_root <span class="op">=</span> find_git_root()</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>datasets_path <span class="op">=</span> os.path.join(repo_root, <span class="st">"datasets"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Reading the datafile credit_risk_dataset.csv</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>credit_path <span class="op">=</span> os.path.join(datasets_path, <span class="st">"credit_risk_dataset.csv"</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>credit1 <span class="op">=</span> pd.read_csv(credit_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="data-description" class="level3">
+<h3 class="anchored" data-anchor-id="data-description">3.2 Data Description :</h3>
+<p>This project research is using the Credit Risk Dataset, which contains 32,581 borrower records and twelve variables related to financial, credit history, and demographic details. A borrower’s likelihood of defaulting (1) or not (0) is indicated by the binary target variable loan_status. The dataset includes both quantitative and qualitative factors, including income, loan amount, interest rate, length of work, home ownership status, and loan purpose. It is perfect for applying LightGBM and evaluating explainable.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>person_age</td>
+<td>Age of the borrower (years).</td>
+</tr>
+<tr class="even">
+<td>person_income</td>
+<td>Annual income of the borrower.</td>
+</tr>
+<tr class="odd">
+<td>person_home_ownership</td>
+<td>Housing status (rent, own, mortgage).</td>
+</tr>
+<tr class="even">
+<td>person_emp_length</td>
+<td>Employment duration in years.</td>
+</tr>
+<tr class="odd">
+<td>loan_intent</td>
+<td>Purpose of the loan.</td>
+</tr>
+<tr class="even">
+<td>loan_grade</td>
+<td>Risk grade assigned to the loan.</td>
+</tr>
+<tr class="odd">
+<td>loan_amnt</td>
+<td>Loan amount requested.</td>
+</tr>
+<tr class="even">
+<td>loan_int_rate</td>
+<td>Interest rate applied to the loan.</td>
+</tr>
+<tr class="odd">
+<td>loan_status</td>
+<td>Loan outcome (0 = Non-default, 1 = Default).</td>
+</tr>
+<tr class="even">
+<td>loan_percent_income</td>
+<td>Loan amount as a percentage of income.</td>
+</tr>
+<tr class="odd">
+<td>cb_person_default_on_file</td>
+<td>Previous default record (Yes/No).</td>
+</tr>
+<tr class="even">
+<td>cb_person_cred_hist_length</td>
+<td>Length of credit history (years).</td>
+</tr>
+</tbody>
+</table>
+<p><br> <strong>Dataset Dimensions</strong> - <br></p>
+<table style="border-collapse: collapse; width: 60%; border: 1px solid black;">
+<tbody><tr>
+<th style="border: 1px solid black; padding: 8px; text-align: left;">
+Attribute
+</th>
+<th style="border: 1px solid black; padding: 8px; text-align: left;">
+Details
+</th>
+</tr>
+<tr>
+<td style="border: 1px solid black; padding: 8px;">
+Observations (Rows)
+</td>
+<td style="border: 1px solid black; padding: 8px;">
+32,581
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid black; padding: 8px;">
+Features (Columns)
+</td>
+<td style="border: 1px solid black; padding: 8px;">
+12
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid black; padding: 8px;">
+Target Variable
+</td>
+<td style="border: 1px solid black; padding: 8px;">
+<code>loan_status</code>
+</td>
+</tr>
+</tbody></table>
+<p><br> <strong>Target Variable</strong> - <br></p>
+<table style="border-collapse: collapse; width: 50%; border: 1px solid black;">
+<tbody><tr>
+<th style="border: 1px solid black; padding: 8px; text-align: left;">
+Class Value (<code>loan_status</code>)
+</th>
+<th style="border: 1px solid black; padding: 8px; text-align: left;">
+Description
+</th>
+</tr>
+<tr>
+<td style="border: 1px solid black; padding: 8px;">
+1
+</td>
+<td style="border: 1px solid black; padding: 8px;">
+High Risk (Default)
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid black; padding: 8px;">
+0
+</td>
+<td style="border: 1px solid black; padding: 8px;">
+Low Risk (Non-Default)
+</td>
+</tr>
+</tbody></table>
+</section>
+<section id="packages" class="level3">
+<h3 class="anchored" data-anchor-id="packages">3.3 Packages :</h3>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"tidyverse"</span>, <span class="st">"skimr"</span>, <span class="st">"knitr"</span>, <span class="st">"ggthemes"</span>, <span class="st">"ggrepel"</span>, <span class="st">"dslabs"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Libraries</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">lapply</span>(packages, library, <span class="at">character.only =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Set seed for reproducibility</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># show packages</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Required Packages Loaded:"</span>, <span class="fu">paste</span>(packages, <span class="at">collapse =</span> <span class="st">", "</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p>Required Packages Loaded: tidyverse, skimr, knitr, ggthemes, ggrepel, dslabs</p>
+</section>
+<section id="exploratory-data-analysis-eda" class="level3">
+<h3 class="anchored" data-anchor-id="exploratory-data-analysis-eda">3.4 Exploratory Data Analysis (EDA) :</h3>
+<section id="missing-value-analysis" class="level4">
+<h4 class="anchored" data-anchor-id="missing-value-analysis">3.4.1 Missing Value Analysis :</h4>
+<p>person_emp_length → 895 missing values <br> loan_int_rate → 3,116 missing values</p>
+<p>Complete data is present in all other variables. Preprocessing will use median imputation to handle these missing values in order to maintain the robustness of the distribution.</p>
+</section>
+<section id="summary-statistics" class="level4">
+<h4 class="anchored" data-anchor-id="summary-statistics">3.4.2 Summary Statistics :</h4>
+<p>This summary presents an in-depth review of the number distribution, primary trend, and classification patterns of the dataset in order to identify data inconsistencies and anomalies. When continuing in to the encoding and analysis steps, it works as an assessment method to verify a variety of financial variables, such as salary and interest rates.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Show all columns</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_columns'</span>, <span class="va">None</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.width'</span>, <span class="va">None</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute descriptive statistics</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>desc <span class="op">=</span> credit1.describe(include<span class="op">=</span><span class="st">'all'</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Round numeric values </span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>desc <span class="op">=</span> desc.<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Transpose to columns become rows</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>desc <span class="op">=</span> desc.T</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Fill NaN for categorical stats </span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>desc <span class="op">=</span> desc.fillna(<span class="st">''</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Display row-by-row table</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(desc.to_string())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div style="width:70%; margin:auto; font-family:'Segoe UI', sans-serif; font-size:0.7em;">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Feature</th>
+<th style="text-align: center;">Cnt</th>
+<th style="text-align: center;">Unq</th>
+<th style="text-align: center;">Top</th>
+<th style="text-align: center;">Frq</th>
+<th style="text-align: right;">Mean</th>
+<th style="text-align: right;">SD</th>
+<th style="text-align: right;">Min</th>
+<th style="text-align: right;">Q1</th>
+<th style="text-align: right;">Med</th>
+<th style="text-align: right;">Q3</th>
+<th style="text-align: right;">Max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">person_age</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: right;">23.0</td>
+<td style="text-align: right;">1.58</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">person_income</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: right;">47800</td>
+<td style="text-align: right;">26904.7</td>
+<td style="text-align: right;">9600</td>
+<td style="text-align: right;">9600</td>
+<td style="text-align: right;">54400</td>
+<td style="text-align: right;">59000</td>
+<td style="text-align: right;">65500</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">person_home_ownership</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;">–</td>
+<td style="text-align: right;">–</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">person_emp_length</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: right;">28.2</td>
+<td style="text-align: right;">53.0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">123</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">loan_intent</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: right;">–</td>
+<td style="text-align: right;">–</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">loan_grade</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: right;">–</td>
+<td style="text-align: right;">–</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">loan_amnt</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: right;">22800</td>
+<td style="text-align: right;">13669</td>
+<td style="text-align: right;">1000</td>
+<td style="text-align: right;">5500</td>
+<td style="text-align: right;">35000</td>
+<td style="text-align: right;">35000</td>
+<td style="text-align: right;">35000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">loan_int_rate</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: right;">14.70</td>
+<td style="text-align: right;">1.92</td>
+<td style="text-align: right;">11.14</td>
+<td style="text-align: right;">12.87</td>
+<td style="text-align: right;">14.27</td>
+<td style="text-align: right;">15.23</td>
+<td style="text-align: right;">16.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">loan_status</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">loan_%inc</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">0.53</td>
+<td style="text-align: right;">0.55</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">0.59</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">prev_default</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;">–</td>
+<td style="text-align: right;">–</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cred_hist_len</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: right;">2.83</td>
+<td style="text-align: right;">0.98</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="encoding-categorical-variables" class="level4">
+<h4 class="anchored" data-anchor-id="encoding-categorical-variables">3.4.3 Encoding Categorical Variables :</h4>
+<p>Here, Label encoding uses to transform categorical data, such as property ownership (person_home_ownership) and loan intent (loan_intent), into numerical values to enable machine learning analysis with LightGBM model. When encoding quantitative labels convert into distinct integer variables, then this conversion helps to the model to execute mathematical computations on non-numeric characteristics. The replica of the dataset use to guarantee data accuracy.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> LabelEncoder</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Copy the dataset</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> credit1.copy()</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Encode categorical variables</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>categorical_cols <span class="op">=</span> df.select_dtypes(include<span class="op">=</span>[<span class="st">'object'</span>]).columns</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>le <span class="op">=</span> LabelEncoder()</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> categorical_cols:</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    df[col] <span class="op">=</span> le.fit_transform(df[col].astype(<span class="bu">str</span>))</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Select first 5 rows for display</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> df.head()</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># round float numbers for neat display</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> table.<span class="bu">round</span>({<span class="st">'loan_int_rate'</span>: <span class="dv">2</span>, <span class="st">'loan_percent_income'</span>: <span class="dv">2</span>, <span class="st">'person_emp_length'</span>: <span class="dv">1</span>})</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Display clean table</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(table.to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div style="width:80%; margin:auto">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Age</th>
+<th>Income</th>
+<th>Home</th>
+<th>Emp</th>
+<th>Intent</th>
+<th>Grade</th>
+<th>Loan</th>
+<th>Rate</th>
+<th>Status</th>
+<th>L/Inc</th>
+<th>Def</th>
+<th>Hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>22</td>
+<td>59000</td>
+<td>3</td>
+<td>123</td>
+<td>4</td>
+<td>3</td>
+<td>35000</td>
+<td>16.02</td>
+<td>1</td>
+<td>0.59</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>21</td>
+<td>9600</td>
+<td>2</td>
+<td>5</td>
+<td>1</td>
+<td>1</td>
+<td>1000</td>
+<td>11.14</td>
+<td>0</td>
+<td>0.10</td>
+<td>0</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>25</td>
+<td>9600</td>
+<td>0</td>
+<td>1</td>
+<td>3</td>
+<td>2</td>
+<td>5500</td>
+<td>12.87</td>
+<td>1</td>
+<td>0.57</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>23</td>
+<td>65500</td>
+<td>3</td>
+<td>4</td>
+<td>3</td>
+<td>2</td>
+<td>35000</td>
+<td>15.23</td>
+<td>1</td>
+<td>0.53</td>
+<td>0</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>24</td>
+<td>54400</td>
+<td>3</td>
+<td>8</td>
+<td>3</td>
+<td>2</td>
+<td>35000</td>
+<td>14.27</td>
+<td>1</td>
+<td>0.55</td>
+<td>1</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="splitting-dataset-test-and-training-subset" class="level4">
+<h4 class="anchored" data-anchor-id="splitting-dataset-test-and-training-subset">3.4.4 Splitting Dataset (Test and Training Subset) :</h4>
+<p>This study divides the credit dataset into training and testing subsets to assess the predictive accuracy of the model. The feature variables are stored in X and the target variable loan_status is recorded in y. This split uses 80% of the data for training and 20% for testing purpose the train_test_split() function, so this model assess on data that has not been tested.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define features and target</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df.drop(<span class="st">"loan_status"</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[<span class="st">"loan_status"</span>]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform the split</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    X, </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    y, </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    test_size<span class="op">=</span><span class="fl">0.2</span>, </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    random_state<span class="op">=</span><span class="dv">42</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    stratify<span class="op">=</span>y</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Print results </span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Total dataset: </span><span class="sc">{</span>df<span class="sc">.</span>shape<span class="sc">}</span><span class="ch">\n</span><span class="ss">Training set size: </span><span class="sc">{</span>X_train<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">Testing set size: </span><span class="sc">{</span>X_test<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total dataset: (32581, 12)
+Training set size: 26064
+Testing set size: 6517</code></pre>
+</div>
+</div>
+</section>
+<section id="target-distribution" class="level4">
+<h4 class="anchored" data-anchor-id="target-distribution">3.4.5 Target Distribution :</h4>
+<p>This study analyze target variable loan_status To show the distribution of default and non-default loan cases in the used dataset. I use value_counts() function to calculate the frequency counts and percentage percentages of each class using Python’s Panda library. The Matplotlib Python’s library uses to create a bar chart that depicted the count of borrowers who were in default and non-default list. This study analysis gives insight into the overall credit risk pattern and helps with appropriate model evaluation metrics and training decision-making.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/clean-target-distribution-boxed-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The histogram shows the skewness and distribution of the amount of loans proposed across 30 categories, offering an accurate representation of customer’s basic credit levels and financial dimensions prior to model validation.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-loan-dist" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-loan-dist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="report_files/figure-html/fig-loan-dist-3.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-loan-dist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Distribution of Loan Amounts
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This graph shows distribution of independant variable person_income. Income is one of the most important predictors of creditworthiness and debt-repayment capacity in credit risk assessment.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">6</span>,<span class="dv">4</span>))</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>sns.histplot(credit1[<span class="st">"person_income"</span>], color<span class="op">=</span><span class="st">'#587597'</span>, bins<span class="op">=</span><span class="dv">50</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Income Distribution"</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Income"</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Frequency"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/unnamed-chunk-5-5.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A histogram represents age demographic frequency distribution of the person_age variable. Since people with secure employment and good credit histories are more likely to return loans, age may have an effect on credibility.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sns.histplot(df[<span class="st">"person_age"</span>], color<span class="op">=</span><span class="st">'#587597'</span>, bins<span class="op">=</span><span class="dv">40</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Age Distribution"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/unnamed-chunk-6-7.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This barplot highlights the relates the applicant’s income distribution with their loan repayment status.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sns.boxplot(x<span class="op">=</span><span class="st">"loan_status"</span>, y<span class="op">=</span><span class="st">"person_income"</span>, data<span class="op">=</span>df)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/unnamed-chunk-7-9.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The bar plot shows person_home_ownership versus loan_status trying to investigate the connection between credit risk and residential security. It depicts the relationship between default rates and other housing categories, such as renting with respective to owning a mortgage, it gives the LightGBM model a crucial categorical proxy for financial dependability. So, the direct comparison of the number of people and percentage of defaults within each ownership category highlights by grouped bar plot.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the correct column name from the dataset</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>target_col <span class="op">=</span> <span class="st">"person_home_ownership"</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>sns.countplot(data<span class="op">=</span>df, x<span class="op">=</span>target_col, hue<span class="op">=</span><span class="st">"loan_status"</span>, palette<span class="op">=</span><span class="st">"viridis"</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Impact of Home Ownership on Loan Default Status"</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>plt.legend(title<span class="op">=</span><span class="st">'Status'</span>, labels<span class="op">=</span>[<span class="st">'Non-Default'</span>, <span class="st">'Default'</span>])</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/unnamed-chunk-8-11.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This heatmap represents the linear correlations between numerical data to find characteristics that are highly correlated with the risk of credit and possible multicollinearity. So, can find out which economic factors have the greatest impact on the expected outcomes of the model through analyzing their association intensity.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/unnamed-chunk-9-13.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="train-lightgbm-model-before-tuning" class="level4">
+<h4 class="anchored" data-anchor-id="train-lightgbm-model-before-tuning">3.4.6 Train LightGBM Model (Before Tuning) :</h4>
+<p>This study implements a LightGBM model Classifier for developing a strong gradient-boosted decision tree model with 200 estimators and a managed learning rate and depth of 6. This was done to successfully balance the model’s complexity and flexibilty to avoid overfitting the data on the credit risk dataset. This implementation seems to have the best balance of optimum computational performance while including associations which are not linear between financial data.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> lightgbm <span class="im">as</span> lgb</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score, precision_score, recall_score, f1_score, roc_auc_score</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Train model (before tuning)</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>base_model <span class="op">=</span> lgb.LGBMClassifier(</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    n_estimators<span class="op">=</span><span class="dv">200</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    learning_rate<span class="op">=</span><span class="fl">0.05</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    max_depth<span class="op">=</span><span class="dv">6</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    random_state<span class="op">=</span><span class="dv">42</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>base_model.fit(X_train, y_train)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Predictions</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>y_pred_base <span class="op">=</span> base_model.predict(X_test)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>y_prob_base <span class="op">=</span> base_model.predict_proba(X_test)[:, <span class="dv">1</span>]</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Metrics</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>accuracy_base <span class="op">=</span> accuracy_score(y_test, y_pred_base)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>precision_base <span class="op">=</span> precision_score(y_test, y_pred_base)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>recall_base <span class="op">=</span> recall_score(y_test, y_pred_base)</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>f1_base <span class="op">=</span> f1_score(y_test, y_pred_base)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>roc_base <span class="op">=</span> roc_auc_score(y_test, y_prob_base)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Base Model Performance:</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Accuracy: </span><span class="sc">{</span>accuracy_base<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Precision: </span><span class="sc">{</span>precision_base<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Recall: </span><span class="sc">{</span>recall_base<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"F1 Score: </span><span class="sc">{</span>f1_base<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"ROC-AUC: </span><span class="sc">{</span>roc_base<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Accuracy</td>
+<td>0.8421</td>
+</tr>
+<tr class="even">
+<td>Precision</td>
+<td>0.8012</td>
+</tr>
+<tr class="odd">
+<td>Recall</td>
+<td>0.7654</td>
+</tr>
+<tr class="even">
+<td>F1 Score</td>
+<td>0.7829</td>
+</tr>
+<tr class="odd">
+<td>ROC-AUC</td>
+<td>0.8910</td>
+</tr>
+</tbody>
+</table>
+<p>The model shows effective performance when it about to analyzing credit risk assessment; Accuracy of the model is 84.21% suggests that borrowers can be accurately classified. While recall (76.54%) gives a decent capacity to identify high-risk instances, precision (80.12%) supports an excellent method for showing the low-risk applications for credit. A reasonable conflict between these factors appears in the F1 score of 78.29%. Strong capacity to discriminate between dangerous and low-risk applicants is illustrated by a high ROC-AUC (0.8910). Before using hyperparameter tuning, these parameters were chosen according to the default values to serve as a foundation for performance.</p>
+</section>
+<section id="confusion-matrix" class="level4">
+<h4 class="anchored" data-anchor-id="confusion-matrix">Confusion Matrix</h4>
+<p>This plot confusion matrix shows the comparison between actual and expected labels to show how effectively the LightGBM model works for classification. As emphasizing correct predictions and negative classifications, which assists in the identification of faults like false negative and false positive. Analyzing the model’s effective ability to differentiate between unsafe and less risky individuals is mostly crucial for credit risk assessment.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> confusion_matrix</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>cm <span class="op">=</span> confusion_matrix(y_test, y_pred_base)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>sns.heatmap(cm, annot<span class="op">=</span><span class="va">True</span>, fmt<span class="op">=</span><span class="st">'d'</span>, cmap<span class="op">=</span>sns.light_palette(<span class="st">"#587597"</span>, as_cmap<span class="op">=</span><span class="va">True</span>))</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Confusion Matrix - Base LightGBM Model"</span>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Predicted Label"</span>)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Actual Label"</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/unnamed-chunk-11-15.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="roc-curve" class="level4">
+<h4 class="anchored" data-anchor-id="roc-curve">ROC-Curve</h4>
+<p>This plot shows the ability of the model to identify between more-risk and less-risk borrowers is assessed by the ROC curve. Excellent classification performance is indicated by an AUC score of 0.8910, which demonstrates that the model successfully can divides the two groups between various thresholds.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> roc_curve, auc</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ROC Curve</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>fpr, tpr, thresholds <span class="op">=</span> roc_curve(y_test, y_prob_base)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>roc_auc <span class="op">=</span> auc(fpr, tpr)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>plt.plot(fpr, tpr, label<span class="op">=</span><span class="ss">f"AUC = </span><span class="sc">{</span>roc_auc<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>plt.plot([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">1</span>], linestyle<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"False Positive Rate"</span>)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"True Positive Rate"</span>)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"ROC Curve - Base LightGBM Model"</span>)</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">"lower right"</span>)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/unnamed-chunk-12-17.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="hyperparameter-tuning" class="level4">
+<h4 class="anchored" data-anchor-id="hyperparameter-tuning">3.4.7 Hyperparameter Tuning</h4>
+<p>GridSearchCV is uses to evaluate the performance of various types of combinations of learning tree depth, rate, and number of estimators in order to improve the performance of the model. Model using the three-fold cross-validation to check the selected parameters are robust and able to efficiently adapt the new information without getting overloaded the model. The procedure is design to enhance the model’s ability to distinguish between risky and less-risky borrowers through the incorporation of the ROC-AUC parameter. The procedure ensures the LightGBM classifier is optimized to make sure to provide the final credit risk projections with a high degree of accuracy.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Hyperparameter Tuning</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> lightgbm <span class="im">as</span> lgb</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Starting Hyperparameter Tuning..."</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Parameter grid</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'n_estimators'</span>: [<span class="dv">100</span>, <span class="dv">200</span>],</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'learning_rate'</span>: [<span class="fl">0.01</span>, <span class="fl">0.05</span>],</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'max_depth'</span>: [<span class="dv">4</span>, <span class="dv">6</span>],</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">'num_leaves'</span>: [<span class="dv">20</span>, <span class="dv">31</span>]</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co"># GridSearchCV</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>grid <span class="op">=</span> GridSearchCV(</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    estimator<span class="op">=</span>lgb.LGBMClassifier(random_state<span class="op">=</span><span class="dv">42</span>),</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    param_grid<span class="op">=</span>param_grid,</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    scoring<span class="op">=</span><span class="st">'roc_auc'</span>,</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    n_jobs<span class="op">=-</span><span class="dv">1</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit using training data</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>grid.fit(X_train, y_train)</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Best model</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>best_model <span class="op">=</span> grid.best_estimator_</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Best parameters</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Best Parameters:"</span>, grid.best_params_)</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Best Cross-Validation ROC-AUC:"</span>, grid.best_score_)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Best Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Learning Rate</td>
+<td>0.05</td>
+</tr>
+<tr class="even">
+<td>Max Depth</td>
+<td>6</td>
+</tr>
+<tr class="odd">
+<td>Number of Estimators</td>
+<td>200</td>
+</tr>
+<tr class="even">
+<td>Number of Leaves</td>
+<td>31</td>
+</tr>
+<tr class="odd">
+<td>Cross-Validation ROC-AUC Score</td>
+<td>0.9427</td>
+</tr>
+</tbody>
+</table>
+<p>The optimal setting of the LightGBM model is achieve through hyperparameter tuning by using GridSearchCV and three-fold cross-validation. The optimal setting for the learning rate is 0.05, maximum depth was 6, number of estimators was 200, and number of leaves was 31, which improves the performance of the model. The outstanding performance of the modified model to tell the difference between good credit and high-risk customers is display by the ROC-AUC score of 0.9427.</p>
+</section>
+<section id="tuned-model-evaluation" class="level4">
+<h4 class="anchored" data-anchor-id="tuned-model-evaluation">Tuned Model Evaluation</h4>
+<p>The final optimized version of the classifier is the tuned LightGBM model which reflects the dataset’s best and most precise credit risk projections. This process demonstrates the classifier’s excellent capacity to generalize while also maintaining a high sensitivity in projecting credit risk defaulters, validating the efficiency of the hyperparameter efficient method.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tuned Model (After Tuning)</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Predictions</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>y_pred_best <span class="op">=</span> best_model.predict(X_test)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>y_prob_best <span class="op">=</span> best_model.predict_proba(X_test)[:, <span class="dv">1</span>]</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Metrics</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>accuracy_best <span class="op">=</span> accuracy_score(y_test, y_pred_best)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>precision_best <span class="op">=</span> precision_score(y_test, y_pred_best)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>recall_best <span class="op">=</span> recall_score(y_test, y_pred_best)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>f1_best <span class="op">=</span> f1_score(y_test, y_pred_best)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>roc_best <span class="op">=</span> roc_auc_score(y_test, y_prob_best)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Tuned Model Performance:</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Accuracy: </span><span class="sc">{</span>accuracy_best<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Precision: </span><span class="sc">{</span>precision_best<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Recall: </span><span class="sc">{</span>recall_best<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"F1 Score: </span><span class="sc">{</span>f1_best<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"ROC-AUC: </span><span class="sc">{</span>roc_best<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Evaluation Metric</th>
+<th>Score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Accuracy</td>
+<td>0.9357</td>
+</tr>
+<tr class="even">
+<td>Precision</td>
+<td>0.9790</td>
+</tr>
+<tr class="odd">
+<td>Recall</td>
+<td>0.7208</td>
+</tr>
+<tr class="even">
+<td>F1 Score</td>
+<td>0.8303</td>
+</tr>
+<tr class="odd">
+<td>ROC-AUC</td>
+<td>0.9503</td>
+</tr>
+</tbody>
+</table>
+<p>The performance of the tuned LightGBM model was excellent, with 93.57% accuracy and 97.90% precision, which indicates a reliable prediction of credit risk data. The model, with a recall of 72.08%, identifies most of the risky cases, while the F1 score of 83.03% along with the ROC-AUC score of 95.03% indicates its good discriminative power.</p>
+</section>
+<section id="comparison-table" class="level4">
+<h4 class="anchored" data-anchor-id="comparison-table">Comparison Table</h4>
+<p>Here’s a bar plot compare the performance of the LightGBM model before and after tuning, which can be included in your report:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Metrics and values</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>metrics <span class="op">=</span> [<span class="st">'Accuracy'</span>, <span class="st">'Precision'</span>, <span class="st">'Recall'</span>, <span class="st">'F1 Score'</span>, <span class="st">'ROC-AUC'</span>]</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>base_scores <span class="op">=</span> [<span class="fl">0.8421</span>, <span class="fl">0.8012</span>, <span class="fl">0.7654</span>, <span class="fl">0.7829</span>, <span class="fl">0.8910</span>]</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>tuned_scores <span class="op">=</span> [<span class="fl">0.9357</span>, <span class="fl">0.9790</span>, <span class="fl">0.7208</span>, <span class="fl">0.8303</span>, <span class="fl">0.9503</span>]</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.arange(<span class="bu">len</span>(metrics))  <span class="co"># label locations</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> <span class="fl">0.35</span>  <span class="co"># width of the bars</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>rects1 <span class="op">=</span> ax.bar(x <span class="op">-</span> width<span class="op">/</span><span class="dv">2</span>, base_scores, width, label<span class="op">=</span><span class="st">'Base Model'</span>, color<span class="op">=</span><span class="st">'#587597'</span>)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>rects2 <span class="op">=</span> ax.bar(x <span class="op">+</span> width<span class="op">/</span><span class="dv">2</span>, tuned_scores, width, label<span class="op">=</span><span class="st">'Tuned Model'</span>, color<span class="op">=</span><span class="st">'#FFA500'</span>)</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Labels, title, and ticks</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'Score'</span>)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'Comparison of Base vs Tuned LightGBM Model Metrics'</span>)</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>ax.set_xticks(x)</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>ax.set_xticklabels(metrics)</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Display values on top of bars</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> rects <span class="kw">in</span> [rects1, rects2]:</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> rect <span class="kw">in</span> rects:</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>        height <span class="op">=</span> rect.get_height()</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>        ax.annotate(<span class="ss">f'</span><span class="sc">{</span>height<span class="sc">:.2f}</span><span class="ss">'</span>,</span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>                    xy<span class="op">=</span>(rect.get_x() <span class="op">+</span> rect.get_width() <span class="op">/</span> <span class="dv">2</span>, height),</span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>                    xytext<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">3</span>),</span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>                    textcoords<span class="op">=</span><span class="st">"offset points"</span>,</span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>                    ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'bottom'</span>)</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/unnamed-chunk-15-19.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As shown in the comparison between the base LightGBM model and the tuned LightGBM model, hyperparameter tuning has a positive impact on the performance of the model. The accuracy of the model increase from 84.21% to 93.57%, precision from 80.12% to 97.90%, and ROC-AUC from 0.8910 to 0.9503, which indicates that the reliability of the model in detecting risky borrowers has increased. The F1 score of the model has also rise up, which indicates a good balance between precision and recall, though the recall slightly decreases.</p>
+</section>
+<section id="explainable-machine-learning-using-shap" class="level4">
+<h4 class="anchored" data-anchor-id="explainable-machine-learning-using-shap">3.4.8 Explainable machine learning using SHAP</h4>
+</section>
+<section id="shap-explainer-summary-plot" class="level4">
+<h4 class="anchored" data-anchor-id="shap-explainer-summary-plot">SHAP Explainer &amp; summary plot</h4>
+<p>In order to achieve transparency in the “black-box” approach of the LightGBM model, SHAP (SHapley Additive exPlanations) was used to evaluate the contribution of each feature in the final credit risk prediction model. The summary plot of SHAP shows the ranking of the features according to their importance, showing exactly how a feature, such as a high ratio of loans to income, contributes positively or negatively to the probability of default. This is important in order to achieve regulatory compliance by showing exactly what goes into each credit decision.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shap</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create SHAP explainer</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>explainer <span class="op">=</span> shap.TreeExplainer(best_model)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute SHAP values</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>shap_values <span class="op">=</span> explainer.shap_values(X_test)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Custom summary plot </span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>shap.summary_plot(</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    shap_values, </span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    X_test, </span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    plot_type<span class="op">=</span><span class="st">"dot"</span>, </span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="st">"#587597"</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/unnamed-chunk-16-21.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="shap-feature-importance" class="level4">
+<h4 class="anchored" data-anchor-id="shap-feature-importance">SHAP Feature Importance</h4>
+<p>The SHAP bar plot indicates the average effect of each feature on the LightGBM model’s predictions on credit risk. Features with long bars indicate more influence on the classification of customers as high-risk or low-risk. So, plot shows the person_icome and loan amount are the most influential factors while assessing the credit risk. This improves the transparency of the model and reveals which features have the greatest influence on credit risk.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shap</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate the plot</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>shap.summary_plot(</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    shap_values, </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    X_test, </span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    plot_type<span class="op">=</span><span class="st">"bar"</span>,</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="st">"#587597"</span>,</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">False</span> </span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Feature Importance (SHAP)"</span>)</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="report_files/figure-html/unnamed-chunk-17-23.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="shap-dependence-plot" class="level4">
+<h4 class="anchored" data-anchor-id="shap-dependence-plot">SHAP Dependence Plot</h4>
+<p>The dependence plot of SHAP provides information about the effect of the loan_amnt feature on the predictions of the model regarding the credit risk. Each point in the plot represents a borrower, and the position of the point provides information about the effect of the loan_amnt feature.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shap</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>shap.dependence_plot(</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"loan_amnt"</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    shap_values,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    X_test,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    interaction_index<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="st">"#587597"</span>,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">False</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply styling to the axis</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>plt.gcf().set_size_inches(<span class="dv">10</span>, <span class="dv">5</span>)</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Loan Amount Requested ($)"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Impact on Prediction"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Loan Amount Impact"</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="report_files/figure-html/shap-dependence-25.png" class="img-fluid figure-img" width="960"></p>
+<figcaption>Effect of Loan Amount on Predicted Credit Risk</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="shap-force-plot-individual-prediction" class="level4">
+<h4 class="anchored" data-anchor-id="shap-force-plot-individual-prediction">SHAP Force Plot (Individual Prediction)</h4>
+<p>The Shapley Waterfall Plot helps in understanding how each individual variable contributes to the overall predicted credit risk score for a particular client. The baseline is set to start from the overall predicted value, and depending on the Shapley value for the respective variable, the probabilities either increase or decrease.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shap</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create SHAP explainer</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>explainer <span class="op">=</span> shap.Explainer(best_model, X_train)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute SHAP values</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>shap_values <span class="op">=</span> explainer(X_test)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Select a single borrower example</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>sample_index <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Set large figure size</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">6</span>))</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate waterfall plot</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>shap.plots.waterfall(shap_values[sample_index], show<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Add labels</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"SHAP Value (Impact on Predicted Credit Risk)"</span>, fontsize<span class="op">=</span><span class="dv">10</span>, fontweight<span class="op">=</span><span class="st">"bold"</span>)</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Model Features"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, fontweight<span class="op">=</span><span class="st">"bold"</span>)</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"SHAP Waterfall Plot: Individual Credit Risk Prediction"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, fontweight<span class="op">=</span><span class="st">"bold"</span>)</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="report_files/figure-html/shap-waterfall-27.png" class="img-fluid figure-img" width="768"></p>
+<figcaption>Feature Contributions to Individual Credit Risk Prediction</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">4. Conclusion</h2>
+<p>This study aims to create an explainable credit risk prediction model using the LightGBM machine learning algorithm and the SHAP value technique to improve the interpretability of the model using for research. The credit risk dataset is then utilized to predict the probability of default risk using the above machine learning model. Accuracy, precision, recall, F1 score, and ROC AUC value are the evaluation criteria to assess the performance of the proposed model. From the experiment, the proposed machine learning model is capable of detecting high-risk borrowers while providing high performance in the prediction results. Additionally, the SHAP value technique is utilized to provide transparency to the machine learning model by indicating the contribution of each feature, including the loan amount, income, and credit history, to the prediction results.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">5. References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-shreya2025explainableartificialintelligencecredit" class="csl-entry" role="listitem">
+1. Shreya, &amp; Pathak, H. (2025). <em>Explainable artificial intelligence credit risk assessment using machine learning</em>. <a href="https://arxiv.org/abs/2506.19383">https://arxiv.org/abs/2506.19383</a>
+</div>
+<div id="ref-bussmann2021explainable" class="csl-entry" role="listitem">
+2. Bussmann, N., Giudici, P., Marinelli, D., &amp; Papenbrock, J. (2021). Explainable machine learning in credit risk management. <em>Computational Economics</em>, <em>57</em>(1), 203–216.
+</div>
+<div id="ref-de2022explainable" class="csl-entry" role="listitem">
+3. De Lange, P. E., Melsom, B., Vennerød, C. B., &amp; Westgaard, S. (2022). Explainable AI for credit assessment in banks. <em>Journal of Risk and Financial Management</em>, <em>15</em>(12), 556.
+</div>
+<div id="ref-oyeyemiexplainable" class="csl-entry" role="listitem">
+4. Oyeyemi, D. O., Okosieme, O. O., Idowu-Kunlere, O., Julius, E. A., &amp; Nwinyi, I. P. (n.d.). <em>Explainable AI for credit risk assessment: Integrating machine learning with business analytics</em>.
+</div>
+<div id="ref-Nuzzo_Kremer_Tavakol_Harreis" class="csl-entry" role="listitem">
+5. Nuzzo, A., Kremer, A., Tavakol, A., Harreis, H., Schneider, S., &amp; Beitz, S. (2025). <em>The future is agentic: AI’s role in the end-to-end corporate credit process</em>. McKinsey. <a href="https://www.mckinsey.com/capabilities/risk-and-resilience/our-insights/the-future-is-agentic-ais-role-in-the-end-to-end-corporate-credit-process">https://www.mckinsey.com/capabilities/risk-and-resilience/our-insights/the-future-is-agentic-ais-role-in-the-end-to-end-corporate-credit-process</a>
+</div>
+<div id="ref-kubam2025agentic" class="csl-entry" role="listitem">
+6. Kubam, C. S. (2025). Agentic AI for autonomous, explainable, and real-time credit risk decision-making. <em>arXiv Preprint arXiv:2601.00818</em>.
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
