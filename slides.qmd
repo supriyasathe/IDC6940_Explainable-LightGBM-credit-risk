@@ -1,15 +1,15 @@
 ---
 title: "Explainable Credit Risk Assessment using LightGBM"
-
 author: "Supriya Sathe (Advisor: Dr. Cohen)"
-date: '`r Sys.Date()`'
-format:
-  revealjs
+date: "`r Sys.Date()`"
+format: 
+  revealjs:
+    theme: simple
+    slide-number: true
+    toc: false
 course: Capstone Projects in Data Science
-bibliography: references.bib # file contains bibtex for references
-#always_allow_html: true # this allows to get PDF with HTML features
-self-contained: true
-execute: 
+bibliography: references.bib
+execute:
   warning: false
   message: false
 editor: 
@@ -17,132 +17,116 @@ editor:
     wrap: 72
 ---
 
-::: callout-important
-**Remember:** Demonstrate how machine learning and explainable AI can improve
-credit risk prediction while maintaining transparency in financial
-decision-making.
+## Introduction
 
-More information about `revealjs`:
-<https://quarto.org/docs/reference/formats/presentations/revealjs.html>
-:::
+Credit risk assessment is an important task for financial institutions to determine whether a borrower is likely to default on a loan.
 
-## 1. Introduction  {.smaller}
+Traditional statistical models such as logistic regression are easy to interpret but often fail to capture complex relationships within financial datasets.
 
-The need for assessing credit risks is essential for banks to determine their potential defaulter customers and take decisions regarding loan issuance. While traditional models, such as logistic regression, are quite simple, they lack the ability to capture intricate patterns that may exist within vast amounts of financial data. However, while machine learning algorithms, such as LightGBM, have superior predictive capability, they tend to lack clarity since they are difficult to interpret.
+Machine learning models such as **LightGBM** provide improved predictive performance but are often considered "black box" models.
 
-## 2. Methods (LightGBM)
+This project demonstrates how **Explainable AI techniques such as SHAP can improve transparency in credit risk predictions.**
 
-LightGBM Model assumes that the credit risk can be treated as a binary classification problem.
+---
 
-LightGBM Logic: This technique constructs trees progressively while minimizing the value of a loss function. The ultimate result is the combination of all the trees :
+## Dataset Description
 
-$$\hat{y}_i = \sum_{k=1}^K f_k(x_i)$$
+The dataset used in this project contains **32,581 loan records**.
 
-SHAP Values: Based on Cooperative Game Theory, SHAP breaks down the prediction as follows:
+Features include:
 
-$$f(x) = \phi_0 + \sum_{j=1}^M \phi_j$$
+- Demographic attributes (age, employment length)
+- Financial attributes (income, loan amount)
+- Credit history information
+- Loan purpose and interest rate
 
+Target variable:
 
-## 3. Analysis and Results
+**loan_status**
+- 0 → Non-default
+- 1 → Default
 
-### 3.1 Data Preprocessing 
-The dataset with 32,581 observations contains both financial, credit, and demographic attributes. The preprocessing process involves the following:
+---
 
-Handling Missing Values - Median replacement of variables like person_emp_length and loan_int_rate.
-Categorical Variable Labeling - Labeling the categorical variables like loan_intent and person_home_ownership.
-Separating Independent and Dependent Variables - X represents independent variables, whereas y represents dependent variable loan_status.
-Training and Testing Data Split - Training data consists of 80% observations, and testing data includes 20% observations.
+## Data Preprocessing
 
-## 3.Analysis and Results
+Several preprocessing steps were performed:
 
-### **3.2. Dataset Visualization**
+**Handling Missing Values**
+- Median imputation for variables such as:
+  - `person_emp_length`
+  - `loan_int_rate`
 
-```{python}
-#| label: corr-heatmap
-#| fig-cap: "Correlation Heatmap of Numerical Features"
+**Categorical Encoding**
+- Label encoding for variables like:
+  - `loan_intent`
+  - `person_home_ownership`
 
-library(ggplot2)
-library(reshape2)
+**Train-Test Split**
+- 80% training data
+- 20% testing data
 
-# Select numeric columns
-num_data <- credit_data %>% select(person_age, person_income, person_emp_length, loan_amnt, loan_int_rate, loan_%inc, cred_hist_len)
+---
 
-# Compute correlation matrix
-corr_mat <- round(cor(num_data, use="complete.obs"), 2)
-melted_corr <- melt(corr_mat)
+## LightGBM Model
 
-# Plot heatmap
-ggplot(melted_corr, aes(x=Var1, y=Var2, fill=value)) +
-  geom_tile(color="white") +
-  scale_fill_gradient2(low="blue", high="red", mid="white", midpoint=0, limit=c(-1,1)) +
-  theme_minimal() +
-  labs(title="Correlation Heatmap of Numerical Features", x="", y="") +
-  geom_text(aes(label=value), color="black", size=3) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+LightGBM treats credit risk prediction as a **binary classification problem**.
 
-```
+The model builds decision trees sequentially while minimizing the loss function.
 
+The final prediction is the sum of all decision trees:
 
+\[
+\hat{y}_i = \sum_{k=1}^{K} f_k(x_i)
+\]
 
--   Describe your data sources and collection process.
+Where:
 
--   Present initial findings and insights through visualizations.
+- \(f_k\) represents the decision tree
+- \(K\) is the number of trees
+- \(x_i\) represents the input features
 
--   Highlight unexpected patterns or anomalies.
+---
 
+## Explainable AI with SHAP
 
+To interpret model predictions, we use **SHAP (SHapley Additive Explanations)**.
 
-## Data Exploration and Visualization {.smaller}
+SHAP assigns each feature a contribution value for a prediction.
 
+\[
+f(x) = \phi_0 + \sum_{j=1}^{M} \phi_j
+\]
 
+Where:
 
-```{r, warning=FALSE, echo=F, message=FALSE}
-# loading packages 
-library(tidyverse)
-library(knitr)
-library(ggthemes)
-library(ggrepel)
-library(dslabs)
-```
+- \(\phi_0\) is the base value
+- \(\phi_j\) represents each feature's contribution
 
-```{r, warning=FALSE, echo=F}
-# Load Data
-#kable(head(murders))
+This helps explain **why a borrower is predicted to default or not.**
 
-ggplot1 = murders %>% ggplot(mapping = aes(x=population/10^6, y=total)) 
+---
 
-  ggplot1 + geom_point(aes(col=region), size = 4) +
-  geom_text_repel(aes(label=abb)) +
-  scale_x_log10() +
-  scale_y_log10() +
-  geom_smooth(formula = "y~x", method=lm,se = F)+
-  xlab("Populations in millions (log10 scale)") + 
-  ylab("Total number of murders (log10 scale)") +
-  ggtitle("US Gun Murders in 2010") +
-  scale_color_discrete(name = "Region")+
-      theme_bw()
-  
-
-```
-
-## Modeling and Results
-
--   Explain your data preprocessing and cleaning steps.
-
--   Present your key findings in a clear and concise manner.
-
--   Use visuals to support your claims.
-
--   **Tell a story about what the data reveals.**
+## Dataset Visualization
 
 ```{r}
+library(tidyverse)
+library(reshape2)
 
-```
+# Example numeric variables
+num_data <- credit_data %>% 
+  select(person_age, person_income, person_emp_length,
+         loan_amnt, loan_int_rate, loan_percent_income,
+         cred_hist_len)
 
-## Conclusion
+corr_mat <- round(cor(num_data, use="complete.obs"),2)
+melted_corr <- melt(corr_mat)
 
--   Summarize your key findings.
-
--   Discuss the implications of your results.
-
-## References
+ggplot(melted_corr, aes(Var1, Var2, fill=value)) +
+  geom_tile(color="white") +
+  scale_fill_gradient2(low="blue", high="red", mid="white", midpoint=0) +
+  geom_text(aes(label=value), size=3) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle=45, hjust=1)) +
+  labs(title="Correlation Heatmap of Numerical Features",
+       x="", y="")
