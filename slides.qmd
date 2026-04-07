@@ -1,132 +1,684 @@
 ---
 title: "Explainable Credit Risk Assessment using LightGBM"
-author: "Supriya Sathe (Advisor: Dr. Cohen)"
-date: "`r Sys.Date()`"
+author:
+  - name: Supriya Sathe
+    url: 
+  - name: "Supervisor: Dr. Cohen"
 format: 
   revealjs:
     theme: simple
     slide-number: true
-    toc: false
-course: Capstone Projects in Data Science
+    code-fold: true
+    self-contained: true
+    center: false
+    background-image: Blue_Standard02.png
+    background-size: cover
+    css: custom.css
 bibliography: references.bib
-execute:
-  warning: false
-  message: false
-editor: 
-  markdown: 
-    wrap: 72
+link-citations: true
+csl: apa-numeric-superscript-brackets.csl
 ---
-
-## Introduction
-
-Credit risk assessment is an important task for financial institutions to determine whether a borrower is likely to default on a loan.
-
-Traditional statistical models such as logistic regression are easy to interpret but often fail to capture complex relationships within financial datasets.
-
-Machine learning models such as **LightGBM** provide improved predictive performance but are often considered "black box" models.
-
-This project demonstrates how **Explainable AI techniques such as SHAP can improve transparency in credit risk predictions.**
-
----
-
-## Dataset Description
-
-The dataset used in this project contains **32,581 loan records**.
-
-Features include:
-
-- Demographic attributes (age, employment length)
-- Financial attributes (income, loan amount)
-- Credit history information
-- Loan purpose and interest rate
-
-Target variable:
-
-**loan_status**
-- 0 → Non-default
-- 1 → Default
-
----
-
-## Data Preprocessing
-
-Several preprocessing steps were performed:
-
-**Handling Missing Values**
-- Median imputation for variables such as:
-  - `person_emp_length`
-  - `loan_int_rate`
-
-**Categorical Encoding**
-- Label encoding for variables like:
-  - `loan_intent`
-  - `person_home_ownership`
-
-**Train-Test Split**
-- 80% training data
-- 20% testing data
-
----
-
-## LightGBM Model
-
-LightGBM treats credit risk prediction as a **binary classification problem**.
-
-The model builds decision trees sequentially while minimizing the loss function.
-
-The final prediction is the sum of all decision trees:
-
-\[
-\hat{y}_i = \sum_{k=1}^{K} f_k(x_i)
-\]
-
-Where:
-
-- \(f_k\) represents the decision tree
-- \(K\) is the number of trees
-- \(x_i\) represents the input features
-
----
-
-## Explainable AI with SHAP
-
-To interpret model predictions, we use **SHAP (SHapley Additive Explanations)**.
-
-SHAP assigns each feature a contribution value for a prediction.
-
-\[
-f(x) = \phi_0 + \sum_{j=1}^{M} \phi_j
-\]
-
-Where:
-
-- \(\phi_0\) is the base value
-- \(\phi_j\) represents each feature's contribution
-
-This helps explain **why a borrower is predicted to default or not.**
-
----
-
-## Dataset Visualization
 
 ```{r}
-library(tidyverse)
-library(reshape2)
+#| include: false
+#| message: false
+#| warning: false
 
-# Example numeric variables
-num_data <- credit_data %>% 
-  select(person_age, person_income, person_emp_length,
-         loan_amnt, loan_int_rate, loan_percent_income,
-         cred_hist_len)
+# Load libraries explicitly (simpler than lapply)
 
-corr_mat <- round(cor(num_data, use="complete.obs"),2)
-melted_corr <- melt(corr_mat)
+packages <- c("dplyr", "car", "ResourceSelection", "caret", "pROC",  "logistf", "Hmisc", "rcompanion", "ggplot2", "summarytools", "tidyverse", "knitr", "ggpubr", "ggcorrplot", "randomForest", "gbm", "kernlab", "skimr", "corrplot", "scales", "tidyr", "RColorBrewer", "mice", "ROSE", "ranger", "stacks", "tidymodels", "themis", "gghighlight")
+# Load Libraries
+lapply(packages, library, character.only = TRUE)
+# Set seed for reproducibility
+set.seed(123)
 
-ggplot(melted_corr, aes(Var1, Var2, fill=value)) +
-  geom_tile(color="white") +
-  scale_fill_gradient2(low="blue", high="red", mid="white", midpoint=0) +
-  geom_text(aes(label=value), size=3) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle=45, hjust=1)) +
-  labs(title="Correlation Heatmap of Numerical Features",
-       x="", y="")
+# Load data
+find_git_root <- function(start = getwd()) {
+  path <- normalizePath(start, winslash = "/", mustWork = TRUE)
+  while (path != dirname(path)) {
+    if (dir.exists(file.path(path, ".git"))) return(path)
+    path <- dirname(path)
+  }
+  stop("No .git directory found — are you inside a Git repository?")
+}
+
+repo_root <- find_git_root()
+datasets_path <- file.path(repo_root, "datasets")
+
+# Reading the datafile healthcare-dataset-stroke-data
+stroke_path <- file.path(datasets_path, "kaggle-healthcare-dataset-stroke-data/healthcare-dataset-stroke-data.csv")
+stroke1 = read_csv(stroke_path, show_col_types = FALSE)
+
+# Handle dataset features
+
+stroke1[stroke1 == "N/A" | stroke1 == "Unknown" | stroke1 == "children" | stroke1 == "other"] <- NA
+stroke1$bmi <- round(as.numeric(stroke1$bmi), 2)
+stroke1$gender[stroke1$gender == "Male"] <- 1
+stroke1$gender[stroke1$gender == "Female"] <- 2
+stroke1$gender <- as.numeric(stroke1$gender)
+stroke1$ever_married[stroke1$ever_married == "Yes"] <- 1
+stroke1$ever_married[stroke1$ever_married == "No"] <- 2
+stroke1$ever_married <- as.numeric(stroke1$ever_married)
+stroke1$work_type[stroke1$work_type == "Govt_job"] <- 1
+stroke1$work_type[stroke1$work_type == "Private"] <- 2
+stroke1$work_type[stroke1$work_type == "Self-employed"] <- 3
+stroke1$work_type[stroke1$work_type == "Never_worked"] <- 4
+stroke1$work_type <- as.numeric(stroke1$work_type)
+stroke1$Residence_type[stroke1$Residence_type == "Urban"] <- 1
+stroke1$Residence_type[stroke1$Residence_type == "Rural"] <- 2
+stroke1$Residence_type <- as.numeric(stroke1$Residence_type)
+stroke1$avg_glucose_level <- as.numeric(stroke1$avg_glucose_level)
+stroke1$heart_disease <- as.numeric(stroke1$heart_disease)
+stroke1$hypertension <- as.numeric(stroke1$hypertension)
+stroke1$age <- round(as.numeric(stroke1$age), 2)
+stroke1$stroke <- as.numeric(stroke1$stroke)
+stroke1$smoking_status[stroke1$smoking_status == "never smoked"] <- 1
+stroke1$smoking_status[stroke1$smoking_status == "formerly smoked"] <- 2
+stroke1$smoking_status[stroke1$smoking_status == "smokes"] <- 3
+stroke1$smoking_status <- as.numeric(stroke1$smoking_status)
+stroke1 <- stroke1[, !(names(stroke1) %in% "id")]
+
+# Remove NAs and clean dataset
+
+stroke1$stroke = as.factor(stroke1$stroke)
+stroke1_clean = na.omit(stroke1)
+strokeclean = stroke1_clean
+fourassume = stroke1_clean
+
+strokeclean$stroke = factor(
+  strokeclean$stroke,
+  levels = c("0", "1"),
+  labels = c("No", "Yes")
+)
+
+fourassume$stroke = factor(
+  fourassume$stroke,
+  levels = c("0", "1"),
+  labels = c("No", "Yes")
+)
+
+# ----------------------------------------------------
+# Histograms
+# ----------------------------------------------------
+
+# 1. Get the total number of rows in your data frame
+TOTAL_ROWS <- nrow(strokeclean)
+
+# 2. Use the modified ggplot code
+p1a <- ggplot(strokeclean, aes(x = gender, fill = stroke)) +
+  geom_bar(position = "dodge") +
+  stat_count(
+    # The calculation is (bar_count / TOTAL_ROWS) * 100, rounded to 1 decimal place.
+    position = position_dodge(width = 0.9),
+    aes(
+      label = paste0(
+        round(after_stat(count) / TOTAL_ROWS * 100, 1), "% ", "or ",
+        after_stat(count)
+      )
+    ),
+    geom = "text",
+    vjust = -0.5,
+    size = 3
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+  scale_x_continuous(
+    breaks = c(0, 1), 
+    labels = c("Female", "Male")
+  ) +
+  labs(title = "(a) Gender", x = "Gender", y = "Count")
+
+# (b) Histogram of Age
+p1b <- ggplot(strokeclean, aes(x = age, fill = stroke)) +
+  geom_histogram(binwidth = 1, position = "identity", alpha = 0.7) +
+  # stat_count(aes(label = ..count..), geom = "text", vjust = -0.5, size = 2) +
+  labs(title = "(b) Age", x = "Age", y = "Frequency")
+
+# (b) Bivariate Density Plot of Age
+# p1b <- ggplot(strokeclean, aes(x = age, fill = stroke)) + # Keep fill=stroke
+#   geom_density(alpha = 0.5) + # Overlap the two density curves
+#   labs(title = "(b) Age", x = "Age", y = "Density")
+
+# (c) Histogram of hypertension
+p1c <- ggplot(strokeclean, aes(x = hypertension, fill = stroke)) +
+  geom_bar(position = "dodge") +
+  stat_count(
+    position = position_dodge(width = 0.9),
+    aes(
+      group = stroke,
+      label = paste0(
+        round(after_stat(count) / TOTAL_ROWS * 100, 1), "% ", "or ",
+        after_stat(count)
+      )
+    ),
+    geom = "text",
+    vjust = -0.5,
+    size = 3
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+  # Map 0/1 to Yes/No
+  scale_x_continuous(
+    breaks = c(0, 1),
+    labels = c("No", "Yes")
+  ) +
+  labs(title = "(c) Hypertension", x = "Hypertension", y = "Frequency")
+
+# (d) Histogram of heart_disease
+p1d <- ggplot(strokeclean, aes(x = heart_disease, fill = stroke)) +
+  geom_bar(position = "dodge") +
+  stat_count(
+    position = position_dodge(width = 0.9),
+    aes(
+      group = stroke,
+      label = paste0(
+        round(after_stat(count) / TOTAL_ROWS * 100, 1), "% ", "or ",
+        after_stat(count)
+      )
+    ),
+    geom = "text",
+    vjust = -0.5,
+    size = 3
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+  # Map 0/1 to Yes/No
+  scale_x_continuous(
+    breaks = c(0, 1),
+    labels = c("No", "Yes")
+  ) +
+  labs(title = "(d) Heart Disease", x = "Heart Disease", y = "Frequency")
+
+# (e) Histogram of ever_married
+p1e <- ggplot(strokeclean, aes(x = ever_married, fill = stroke)) +
+  geom_bar(position = "dodge") +
+  stat_count(
+    position = position_dodge(width = 0.9),
+    aes(
+      group = stroke,
+      label = paste0(
+        round(after_stat(count) / TOTAL_ROWS * 100, 1), "% ", "or ",
+        after_stat(count)
+      )
+    ),
+    geom = "text",
+    vjust = -0.5,
+    size = 3
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+  scale_x_continuous(
+    breaks = c(0, 1),
+    labels = c("No", "Yes")
+  ) +
+  # Assuming 'No'/'Yes' are string/factor values, use scale_x_discrete if needed
+  labs(title = "(e) Ever Married", x = "Ever Married", y = "Frequency")
+
+# (f) Histogram of work_type
+p1f <- ggplot(strokeclean, aes(y = work_type, fill = stroke)) +
+  geom_bar(position = "dodge") +
+  stat_count(
+    position = position_dodge(width = 0.9), 
+    aes(
+      group = stroke,
+      label = paste0(
+        round(after_stat(count) / TOTAL_ROWS * 100, 1), "% ", "or ",
+        after_stat(count)
+      )
+    ),
+    geom = "text",
+    hjust = -0.1, # Shift text right for horizontal bar
+    size = 3,
+    color = "black"
+  ) +
+  # Expand X-axis (Frequency) for horizontal bar
+  scale_x_continuous(expand = expansion(mult = c(0, 0.5))) +
+  # Adding Work type labels make it too convoluted
+  # scale_y_continuous(
+  #   breaks = c(1, 2, 3, 4), 
+  #   labels = c("Govt_job", "Private", "Self-employed", "Never_worked")
+  # ) + 
+  labs(title = "(f) Work Type", y = "Work Type", x = "Frequency")
+
+# (g) Histogram of Residence_type
+p1g <- ggplot(strokeclean, aes(x = Residence_type, fill = stroke)) +
+  geom_bar(position = "dodge") +
+  stat_count(
+    # Crucial for aligning text labels with the dodged bars
+    position = position_dodge(width = 0.9), 
+    aes(
+      # Defines the group for position_dodge to work correctly on text
+      group = stroke, 
+      
+      # Combined label: Percentage (top line) + Count (bottom line)
+      label = paste0(
+        # Percentage calculation: (count / TOTAL_ROWS) * 100
+        round(after_stat(count) / TOTAL_ROWS * 100, 1), "% ", "or ",
+        after_stat(count)
+      )
+    ),
+    geom = "text",
+    vjust = -0.5, # Moves the two-line label slightly above the bar
+    size = 3,
+    color = "black" # Ensures better visibility
+  ) +
+  # Adds 15% extra space to the top of the y-axis to prevent label clipping
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) + 
+  scale_x_continuous(
+    breaks = c(1, 2),
+    labels = c("Urban", "Rural")
+  ) +
+  labs(title = "(g) Residence Type", x = "Residence Type", y = "Frequency (Count)")
+
+# (h) Histogram of avg_gloucose_level
+p1h <- ggplot(strokeclean, aes(x = avg_glucose_level, fill = stroke)) +
+  geom_histogram(binwidth = 5, position = "identity", alpha = 0.7) +
+  # stat_count(aes(label = ..count..), geom = "text", vjust = -0.5, size = 2) +
+  labs(title = "(h) Avg. Glucose Level", x = "Glucose Level", y = "Frequency")
+
+# (h) Bivariate Density plot of avg_gloucose_level
+# p1h <- ggplot(strokeclean, aes(x = avg_glucose_level, fill = stroke)) +
+#   geom_density(alpha = 0.5) +
+#   labs(title = "Avg. Glucose Level by Stroke Status", x = "Average Glucose Level", y = "Density")
+
+# (i) Histogram of bmi
+p1i <- ggplot(strokeclean, aes(x = bmi, fill = stroke)) +
+  geom_histogram(binwidth = 2, position = "identity", alpha = 0.7) +
+  labs(title = "(i) BMI", x = "BMI", y = "Frequency")
+
+# (i) Bivariate Density plot of bmi
+# p1i <- ggplot(strokeclean, aes(x = bmi, fill = stroke)) +
+#   geom_density(alpha = 0.5) +
+#   labs(title = "BMI Distribution by Stroke Status", x = "BMI", y = "Density")
+
+# (j) smoking_status
+p1j <- ggplot(strokeclean, aes(y = smoking_status, fill = stroke)) +
+  geom_bar(position = "dodge") +
+  stat_count(
+    position = position_dodge(width = 0.9), 
+    aes(
+      group = stroke, 
+      label = paste0(
+        round(after_stat(count) / TOTAL_ROWS * 100, 1), "% ", "or ",
+        after_stat(count)
+      )
+    ),
+    geom = "text",
+    hjust = -0.1, 
+    size = 3,
+    color = "black" 
+  ) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.5))) + 
+  labs(title = "(j) Smoking Status", y = "Smoking Status", x = "Frequency (Count)")
+
+# ----------------------------------------------------
+# Correlation Analysis
+# ----------------------------------------------------
+df_numeric <- model.matrix(~.-1, data = strokeclean) |>
+  as.data.frame()
+
+# Rename columns for clarity (model.matrix adds prefixes)
+colnames(df_numeric) <- gsub("gender|work_type|smoking_status|Residence_type|ever_married", "", colnames(df_numeric))
+
+# 1. Calculate the correlation matrix
+correlation_matrix <- cor(df_numeric)
+
+# 2. Define a green sequential color palette
+# green_palette <- colorRampPalette(c("#E5F5E0", "#31A354"))(200) # Light to dark green
+green_palette <- colorRampPalette(c("#d5ffc8ff", "#245332ff"))(200) 
+
+# corrplot(correlation_matrix, method = 'number') # colorful number
+# 3. Create the heatmap with the correct palette
+p2 <- corrplot(correlation_matrix, 
+         method = "color",
+         type = "full", # change to full or upper
+         order = "hclust",
+         tl.col = "black",
+         tl.srt = 45,
+         addCoef.col = "black",
+         number.cex = 0.7,
+         col = green_palette, # Use the new palette here
+         diag = FALSE)
+
+# ----------------------------------------------------
+# Statistical modeling
+# ----------------------------------------------------
+model_df <- strokeclean
+model_df <- na.omit(model_df)
+model_df$stroke <- factor(model_df$stroke)
+levels(model_df$stroke) <- c("No", "Yes")
+table(model_df$stroke)
+
+index <- createDataPartition(strokeclean$stroke, p = 0.70, list = FALSE)
+train_data <- strokeclean[index, ]
+test_data  <- strokeclean[-index, ]
+
+train_data$stroke <- factor(train_data$stroke, levels = c("No","Yes"))
+test_data$stroke  <- factor(test_data$stroke,  levels = c("No","Yes"))
+
+# ---------------------------------------------
+# Convert all multi-level categoricals to factors with a clear reference level
+train_data$work_type     <- factor(train_data$work_type)
+train_data$Residence_type<- factor(train_data$Residence_type)
+train_data$smoking_status<- factor(train_data$smoking_status)
+
+# The same should be done for test_data and the binary variables 
+test_data$work_type     <- factor(test_data$work_type)
+test_data$Residence_type<- factor(test_data$Residence_type)
+test_data$smoking_status<- factor(test_data$smoking_status)
+# ---------------------------------------------
+# ----------------------------------------------------
+# Repeated K-fold cross-validation
+# ----------------------------------------------------
+ctrl <- trainControl(
+method = "repeatedcv",
+number = 5,
+repeats = 3,
+classProbs = TRUE,
+summaryFunction = twoClassSummary,
+verboseIter = FALSE
+)
+# ----------------------------------------------------
+# Logistic Regression
+# ----------------------------------------------------
+
+# Using the GLM package without K fold cross validation
+model_lr <- glm(
+  stroke ~ . , 
+  data=train_data , 
+  family = "binomial" (link=logit)
+  )
+
+s1 <- summary(model_lr)
+c1 <- coefficients(model_lr)
+anova1 <- car::Anova(model_lr, type = 3)
+confint1 <- confint(model_lr, level=0.95)
+
+model2_lr <- glm(
+  stroke ~ age +
+  hypertension +
+  avg_glucose_level , 
+  data=train_data , 
+  family = "binomial" (link=logit)
+  )
+
+s2 <- summary(model2_lr)
+c2 <- coefficients(model2_lr)
+anova2 <- car::Anova(model2_lr, type = 3)
+confint2 <- confint(model2_lr, level=0.95)
+
+# ----------------------------------------------------
+# Addressing Class Imbalance with SMOTE
+# ----------------------------------------------------
+
+n_majority <- sum(train_data$stroke == "No")
+
+# Calculate the desired total size for a balanced dataset
+desired_N <- 2 * n_majority
+
+# Create the balanced dataset
+data_balanced_mice <- ROSE::ovun.sample(
+  stroke ~ ., 
+  data = train_data, 
+  method = "over", 
+  N = desired_N, 
+  seed = 123
+)$data
+
+# ----------------------------------------------------
+# Fitting Logistic Regression with Balanced Data
+# ----------------------------------------------------
+
+model3_lr <- glm(
+  stroke ~ age +
+  hypertension +
+  avg_glucose_level , 
+  data=data_balanced_mice , 
+  family = "binomial" (link=logit)
+  )
+
+s3 <- summary(model3_lr)
+c3 <- coefficients(model3_lr)
+anova3 <- car::Anova(model3_lr, type = 3)
+confint3 <- confint(model3_lr, level=0.95)
+
+# ----------------------------------------------------
+# Confusion matrix
+# ----------------------------------------------------
+# 1) Predicted probabilities from logistic regression
+test_data$pred_prob <- predict(
+  model_lr,
+  newdata = test_data,
+  type    = "response"
+)
+
+test_data$pred_prob2 <- predict(
+  model2_lr,
+  newdata = test_data,
+  type    = "response"
+)
+
+test_data$pred_prob3 <- predict(
+  model3_lr,
+  newdata = test_data,
+  type    = "response"
+)
+
+# 2) Make sure the TRUE outcome is a factor with levels No / Yes
+test_data$stroke <- factor(test_data$stroke,
+                             levels = c("No", "Yes"))
+
+# 3) Class predictions at threshold c = 0.5
+test_data$pred_class <- ifelse(test_data$pred_prob >= 0.5, "Yes", "No")
+test_data$pred_class2 <- ifelse(test_data$pred_prob2 >= 0.5, "Yes", "No")
+test_data$pred_class3 <- ifelse(test_data$pred_prob3 >= 0.5, "Yes", "No")
+
+test_data$pred_class <- factor(test_data$pred_class, levels = c("No", "Yes"))
+test_data$pred_class2 <- factor(test_data$pred_class2, levels = c("No", "Yes"))
+test_data$pred_class3 <- factor(test_data$pred_class3, levels = c("No", "Yes"))
+
+# 4) Confusion matrix: positive = "Yes"
+cm <- confusionMatrix(
+  data      = test_data$pred_class,
+  reference = test_data$stroke,
+  positive  = "Yes"
+)
+cm2 <- confusionMatrix(
+  data      = test_data$pred_class2,
+  reference = test_data$stroke,
+  positive  = "Yes"
+)
+cm3 <- confusionMatrix(
+  data      = test_data$pred_class3,
+  reference = test_data$stroke,
+  positive  = "Yes"
+)
+```
+
+## 1. Introduction {.smaller}
+
+Stroke is one of the leading causes of death and disability worldwide and remains a major public health challenge [@WHO2025]. Early identification of high-risk individuals is crucial for prevention and timely intervention. Therefore we develop and fit a Logistic Regression model using key health indicators to evaluate the effectiveness of a much simpler method.
+
+Occam’s Razor: The simplest solution is always the best
+
+---
+
+## 2. Methodology: Logistic Regression
+
+The Binary Logistic ModelThe Logistic Regression model uses the logit link function to model the probability of the outcome ($\pi = P[Y =1]$):
+
+$$ln\left(\frac{\pi}{1-\pi}\right) = \beta_{0} + \beta_{1}x_{1} + \cdots + \beta_{k}x_{k} \quad \text{}$$
+
+The main characteristic of the binary logistic regression is the type of dependent (or outcome) variable. @harris2019statistics A dependent variable in a binary logistic regression has only two levels.
+
+---
+
+## 3. Analysis and Results
+
+### 3.1. Dataset Preprocessing
+
+<div style="font-size: 0.6em">
+
+The [Stroke Prediction Dataset](https://www.kaggle.com/datasets/fedesoriano/stroke-prediction-dataset) @kaggle01 started containing 5,110 observations and 12 features. After cleaning missing and inconsistent entries among other necessarychanges, ended as a dataset containing 3,357 observations and 11 predictors commonly associated with cerebrovascular risk. Those key predictors are listed below.
+
+| Feature Name      | Description                                      | Data Type | Values                                                               |
+|-------------------|--------------------------------------------------|-----------|----------------------------------------------------------------------|
+| gender            | Patient's gender                                 | Numeric   | 1 (Male), 0 (Female)                                                 |
+| age               | Patient's age in years                           | Numeric   | Range 0.08 to 82; rounded to 2 decimal places                        |
+| hypertension      | Indicates if the patient has hypertension        | Numeric   | 0 (No), 1 (Yes)                                                      |
+| heart_disease     | Indicates if the patient has any heart diseases  | Numeric   | 0 (No), 1 (Yes)                                                      |
+| ever_married      | Whether the patient has ever been married        | Numeric   | 1 (Yes), 0 (No)                                                      |
+| work_type         | Type of occupation                               | Numeric   | 1 (Govt_job), 2 (Private), 3 (Self-employed), 4 (Never_worked)       |
+| Residence_type    | Patient's area of residence                      | Numeric   | 1 (Urban), 2 (Rural)                                                 |
+| avg_glucose_level | Average glucose level in blood                   | Numeric   | Range ≈55.12 to 271.74                                               |
+| bmi               | Body Mass Index                                  | Numeric   | Range ≈10.3 to 97.6; converted from character, rounded to 2 decimals |
+| smoking_status    | Patient's smoking status                         | Numeric   | 1 (never smoked), 2 (formerly smoked), 3 (smokes)                    |
+| stroke            | Target Variable: Whether the patient had stroke  | Numeric   | 0 (No Stroke), 1 (Stroke)                                            |
+
+</div>
+
+---
+
+## 3. Analysis and Results
+
+### **3.2. Dataset Visualization**
+
+We can observe from the histograms (a), (b), (c) and (d) the following: 
+
+* The data appears to be slightly imbalanced towards **female** gender but the proportion of stroke cases appears similar for both genders.
+* The number of stroke cases increases after the **age** of $\approx 50$ and peaks in the 60 to 80 age range.
+* The proportion of stroke cases (blue bar) is visibly much higher in the group with **hypertension**.
+* The proportion of stroke cases (blue bar) is visibly much higher in the group with **heart disease**.
+
+---
+
+## 3. Analysis and Results
+
+### **3.2. Dataset Visualization**
+
+```{r}
+#| code-fold: true
+#| message: false
+#| warning: false
+#| fig.cap: "Histogram of (a)gender, (b)age, (c)hypertension, (d)heart_disease."
+
+# p1a, p1b, p1c, p1d
+# (a) Histogram of gender 
+# (b) Histogram of Age
+# (c) Histogram of hypertension
+# (d) Histogram of heart_disease
+ggarrange(p1a, p1b, p1c, p1d, 
+          ncol = 2, nrow = 2, 
+          common.legend = TRUE, legend = "bottom")
+```
+
+---
+
+## 3. Analysis and Results
+
+### **3.2. Dataset Visualization**
+
+We can observe from the histograms (e), (f), (g) and (h) the following: 
+
+* Having been married being associated with a higher stroke risk in this dataset is possibly due to the married group skewing toward older ages.
+* **Self-employed** individuals appear to have the highest risk proportion among the working groups. Most likelly due lack of access to healtcare or benefits.
+* **residence type** does not appear to be a significant factor for stroke risk.
+* **high average glucose (HbA1c) level is a significant risk factor** for stroke.
+
+---
+
+### **3.2. Dataset Visualization**
+
+### **3.2. Dataset Visualization**
+
+```{r}
+#| code-fold: true
+#| message: false
+#| warning: false
+#| fig.cap: "Histogram of (e)ever_married, (f)work_type, (g)Residence_type, (h)avg_gloucose_level."
+
+# p1e p1f p1g p1h
+# (e) Histogram of ever_married
+# (f) Histogram of work_type
+# (g) Histogram of Residence_type
+# (h) Histogram of avg_gloucose_level
+ggarrange(p1e, p1f, p1g, p1h,
+          ncol = 2, nrow = 2, 
+          common.legend = TRUE, legend = "bottom")
+```
+
+---
+
+## 3. Analysis and Results
+
+### **3.2. Dataset Visualization**
+
+We can observe from the histograms (i) and (j) the following: 
+
+* The patient population (pink bars) falls within the overweight to obese range (BMI $\approx 25$ to $35$). But the proportion of stoke outcome is a lot smaller within the healthy BMI range.
+* The highest proportional risk of stroke appears to be in the **formerly smoked** group. This finding is common in medical literature @oshunbade2020cigarette
+
+---
+
+## 3. Analysis and Results
+
+### **3.2. Dataset Visualization**
+
+```{r}
+#| code-fold: true
+#| message: false
+#| warning: false
+#| fig.cap: "Histogram of (i)bmi, (j)smoking_status."
+
+# p1i p1j
+# (i) Histogram of bmi
+# (j) smoking_status
+ggarrange(p1i, p1j,
+          ncol = 2, nrow = 1, 
+          common.legend = TRUE, legend = "bottom")
+```
+
+---
+
+## 3. Statistical Modelling
+
+There is an massive increase in the $\chi^2$ values which demonstrates that the oversampling technique has significantly increased the statistical power of the model.
+
+| Factor            | LR χ² (Original, anova2) | LR χ² (Balanced, anova3) | Change in χ²       |
+|-------------------|---------------------------|----------------------------|---------------------|
+| age               | 120.407                   | 1201.85                    | ≈10.0× Increase     |
+| hypertension      | 18.205                    | 154.34                     | ≈8.5× Increase      |
+| avg_glucose_level | 11.337                    | 69.73                      | ≈6.1× Increase      |
+
+
+---
+
+## 3. Statistical Modelling
+
+<div style="font-size: 0.7em">
+
+* The imbalanced models achieved high Accuracy ($\approx 94.5\%$) and Specificity ($\approx 0.998$), but are practically useless for stroke prediction with a near-zero Sensitivity and missing almost all actual stroke cases.
+
+* Model 3 which utilized oversampling to address the severe class imbalance in stroke outcome, demonstrated a significant improvement in predictive capability: Sensitivity dramatically improved to $0.6481$ being able to identifying 35 True Positives.
+
+| Metric                | Model 1 (Full, Imbalanced) | Model 2 (Reduced, Imbalanced) | Model 3 (Reduced, Balanced) |
+|-----------------------|-----------------------------|--------------------------------|------------------------------|
+| Accuracy              | 0.94538                     | 0.9444                        | 0.7269                      |
+| Sensitivity (Recall)  | 0.01852                     | 0.0000                        | 0.6481                      |
+| Specificity           | 0.99790                     | 0.9979                        | 0.7314                      |
+| True Positives (TP)   | 1                           | 0                              | 35                          |
+| False Negatives (FN)  | 2                           | 2                              | 256                         |
+| True Negatives (TN)   | 951                         | 951                            | 697                         |
+| False Positives (FP)  | 53                          | 54                             | 19                          |
+
+</div>
+
+---
+
+## 4. Conclusion
+
+Logistic Regression althought being a very simple and interpretable baseline model for stroke risk prediction. During the project we were able to evaluate its weaknesses when analysing a heavily unbalanced dataset such as the Stroke Prediction Dataset. Furthermore, logistic regression models major weaknesses is not being able to determine causal relationship. [@gomila2021logistic, @gelman2007causal, @alison2014prediction]
+
+We could evaluate that addressing class imbalance via oversampling (ROSE) was critical for achieving a model that can somewhat successfully predict the outcome of stroke. But this is nowhere near the same precision and accuracy of  Ensemble Modeling such the Dense Stacking Ensemble (DSE) Model applied at @hassan2024predictive which used a meta-classifier to combine the strengths of simpler models with higher-performing complex models.
+
+
+## References
+
+::: {#refs}
+:::
