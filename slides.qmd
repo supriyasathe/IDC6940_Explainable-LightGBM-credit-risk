@@ -33,12 +33,14 @@ Credit risk prediction plays an important role for financial companies to select
 
 --- 
 
-## 2. Methodology: Logistic Regression
+## 2. Methodology: 
 
-The Binary Logistic ModelThe Logistic Regression model uses the logit link function to model the probability of the outcome ($\pi = P[Y =1]$):
+### 2.1 LightGBM 
+LightGBM is applied to predict credit risk due to its efficiency and good performance when handling massive financial data. The model uses Gradient-based One-Side Sampling (GOSS) technique to enhance the process of training and adopts a leaf-wise tree structure that offers better loss reduction compared to level-wise tree construction approaches :
 
-$$ln\left(\frac{\pi}{1-\pi}\right) = \beta_{0} + \beta_{1}x_{1} + \cdots + \beta_{k}x_{k} \quad \text{}$$
+$$\mathcal{L} = \sum_{i=1}^{n} l(y_i, \hat{y}_i) + \Omega(f)$$
 
+This is where the loss due to predicting is summed up with a penalty term to manage the complexity of the model. Optimizing this function, the LightGBM algorithm maximizes its prediction accuracy without causing overfitting.
 
 ---
 
@@ -46,25 +48,7 @@ $$ln\left(\frac{\pi}{1-\pi}\right) = \beta_{0} + \beta_{1}x_{1} + \cdots + \beta
 
 ### 3.1. Dataset Preprocessing
 
-<div style="font-size: 0.6em">
 
-After cleaning missing and inconsistent entries among other necessarychanges, ended as a dataset containing 3,357 observations and 11 predictors commonly associated with cerebrovascular risk. Those key predictors are listed below.
-
-| Feature Name      | Description                                      | Data Type | Values                                                               |
-|-------------------|--------------------------------------------------|-----------|----------------------------------------------------------------------|
-| gender            | Patient's gender                                 | Numeric   | 1 (Male), 0 (Female)                                                 |
-| age               | Patient's age in years                           | Numeric   | Range 0.08 to 82; rounded to 2 decimal places                        |
-| hypertension      | Indicates if the patient has hypertension        | Numeric   | 0 (No), 1 (Yes)                                                      |
-| heart_disease     | Indicates if the patient has any heart diseases  | Numeric   | 0 (No), 1 (Yes)                                                      |
-| ever_married      | Whether the patient has ever been married        | Numeric   | 1 (Yes), 0 (No)                                                      |
-| work_type         | Type of occupation                               | Numeric   | 1 (Govt_job), 2 (Private), 3 (Self-employed), 4 (Never_worked)       |
-| Residence_type    | Patient's area of residence                      | Numeric   | 1 (Urban), 2 (Rural)                                                 |
-| avg_glucose_level | Average glucose level in blood                   | Numeric   | Range ≈55.12 to 271.74                                               |
-| bmi               | Body Mass Index                                  | Numeric   | Range ≈10.3 to 97.6; converted from character, rounded to 2 decimals |
-| smoking_status    | Patient's smoking status                         | Numeric   | 1 (never smoked), 2 (formerly smoked), 3 (smokes)                    |
-| stroke            | Target Variable: Whether the patient had stroke  | Numeric   | 0 (No Stroke), 1 (Stroke)                                            |
-
-</div>
 
 ---
 
@@ -72,12 +56,11 @@ After cleaning missing and inconsistent entries among other necessarychanges, en
 
 ### **3.2. Dataset Visualization**
 
-We can observe from the histograms (a), (b), (c) and (d) the following: 
+We can observe from 
 
-* The data appears to be slightly imbalanced towards **female** gender but the proportion of stroke cases appears similar for both genders.
-* The number of stroke cases increases after the **age** of $\approx 50$ and peaks in the 60 to 80 age range.
-* The proportion of stroke cases (blue bar) is visibly much higher in the group with **hypertension**.
-* The proportion of stroke cases (blue bar) is visibly much higher in the group with **heart disease**.
+* 
+*
+
 
 ---
 
@@ -99,12 +82,12 @@ We can observe from the histograms (a), (b), (c) and (d) the following:
 
 ### **3.2. Dataset Visualization**
 
-We can observe from the histograms (e), (f), (g) and (h) the following: 
+We can observe from the 
 
-* Having been married being associated with a higher stroke risk in this dataset is possibly due to the married group skewing toward older ages.
-* **Self-employed** individuals appear to have the highest risk proportion among the working groups. Most likelly due lack of access to healtcare or benefits.
-* **residence type** does not appear to be a significant factor for stroke risk.
-* **high average glucose (HbA1c) level is a significant risk factor** for stroke.
+* 
+* 
+* ** type** 
+* **high average  significant risk factor** 
 
 ---
 
@@ -125,11 +108,7 @@ We can observe from the histograms (e), (f), (g) and (h) the following:
 
 ### **3.2. Dataset Visualization**
 
-We can observe from the histograms (i) and (j) the following: 
-
-* The patient population (pink bars) falls within the overweight to obese range (BMI $\approx 25$ to $35$). But the proportion of stoke outcome is a lot smaller within the healthy BMI range.
-* The highest proportional risk of stroke appears to be in the **formerly smoked** group. This finding is common in medical literature 
-
+We can observe from the 
 ---
 
 ## 3. Analysis and Results
@@ -149,42 +128,18 @@ We can observe from the histograms (i) and (j) the following:
 
 ## 3. Statistical Modelling
 
-There is an massive increase in the $\chi^2$ values which demonstrates that the oversampling technique has significantly increased the statistical power of the model.
-
-| Factor            | LR χ² (Original, anova2) | LR χ² (Balanced, anova3) | Change in χ²       |
-|-------------------|---------------------------|----------------------------|---------------------|
-| age               | 120.407                   | 1201.85                    | ≈10.0× Increase     |
-| hypertension      | 18.205                    | 154.34                     | ≈8.5× Increase      |
-| avg_glucose_level | 11.337                    | 69.73                      | ≈6.1× Increase      |
-
 
 ---
 
 ## 3. Statistical Modelling
 
-<div style="font-size: 0.7em">
 
-* The imbalanced models achieved high Accuracy ($\approx 94.5\%$) and Specificity ($\approx 0.998$), but are practically useless for stroke prediction with a near-zero Sensitivity and missing almost all actual stroke cases.
-
-* Model 3 which utilized oversampling to address the severe class imbalance in stroke outcome, demonstrated a significant improvement in predictive capability: Sensitivity dramatically improved to $0.6481$ being able to identifying 35 True Positives.
-
-| Metric                | Model 1 (Full, Imbalanced) | Model 2 (Reduced, Imbalanced) | Model 3 (Reduced, Balanced) |
-|-----------------------|-----------------------------|--------------------------------|------------------------------|
-| Accuracy              | 0.94538                     | 0.9444                        | 0.7269                      |
-| Sensitivity (Recall)  | 0.01852                     | 0.0000                        | 0.6481                      |
-| Specificity           | 0.99790                     | 0.9979                        | 0.7314                      |
-| True Positives (TP)   | 1                           | 0                              | 35                          |
-| False Negatives (FN)  | 2                           | 2                              | 256                         |
-| True Negatives (TN)   | 951                         | 951                            | 697                         |
-| False Positives (FP)  | 53                          | 54                             | 19                          |
-
-</div>
 
 ---
 
 ## 4. Conclusion
 
-Logistic Regression althought being a very simple and interpretable baseline model for stroke risk prediction. During the project we were able to evaluate its weaknesses when analysing a heavily 
+
 
 
 ## References
