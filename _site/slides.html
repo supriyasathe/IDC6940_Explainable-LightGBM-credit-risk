@@ -1045,111 +1045,24 @@ Supervisor: Dr. Cohen
 <h2>1. Introduction</h2>
 <p>Credit risk prediction plays an important role for financial companies to select potential defaulter customers and to take the appropriate lending decision. Conventional algorithms, such as logistic regression, are straightforward but unable to understand complicated trends within big data finance sets. ML models, including LightGBM, have better predictive precision but can be difficult to interpret due to their black-box nature. In this paper, LightGBM and SHAP explainability are combined to establish an efficient credit risk prediction system.</p>
 </section>
-<section id="methodology-logistic-regression" class="slide level2">
-<h2>2. Methodology: Logistic Regression</h2>
-<p>The Binary Logistic ModelThe Logistic Regression model uses the logit link function to model the probability of the outcome (<span class="math inline">\(\pi = P[Y =1]\)</span>):</p>
-<p><span class="math display">\[ln\left(\frac{\pi}{1-\pi}\right) = \beta_{0} + \beta_{1}x_{1} + \cdots + \beta_{k}x_{k} \quad \text{}\]</span></p>
+<section id="methodology" class="slide level2">
+<h2>2. Methodology:</h2>
+<h3 id="lightgbm">2.1 LightGBM</h3>
+<p>LightGBM is applied to predict credit risk due to its efficiency and good performance when handling massive financial data. The model uses Gradient-based One-Side Sampling (GOSS) technique to enhance the process of training and adopts a leaf-wise tree structure that offers better loss reduction compared to level-wise tree construction approaches :</p>
+<p><span class="math display">\[\mathcal{L} = \sum_{i=1}^{n} l(y_i, \hat{y}_i) + \Omega(f)\]</span></p>
+<p>This is where the loss due to predicting is summed up with a penalty term to manage the complexity of the model. Optimizing this function, the LightGBM algorithm maximizes its prediction accuracy without causing overfitting.</p>
 </section>
 <section id="analysis-and-results" class="slide level2">
 <h2>3. Analysis and Results</h2>
 <h3 id="dataset-preprocessing">3.1. Dataset Preprocessing</h3>
-<div style="font-size: 0.6em">
-<p>After cleaning missing and inconsistent entries among other necessarychanges, ended as a dataset containing 3,357 observations and 11 predictors commonly associated with cerebrovascular risk. Those key predictors are listed below.</p>
-<table class="caption-top">
-<colgroup>
-<col style="width: 12%">
-<col style="width: 33%">
-<col style="width: 7%">
-<col style="width: 46%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Feature Name</th>
-<th>Description</th>
-<th>Data Type</th>
-<th>Values</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>gender</td>
-<td>Patient’s gender</td>
-<td>Numeric</td>
-<td>1 (Male), 0 (Female)</td>
-</tr>
-<tr class="even">
-<td>age</td>
-<td>Patient’s age in years</td>
-<td>Numeric</td>
-<td>Range 0.08 to 82; rounded to 2 decimal places</td>
-</tr>
-<tr class="odd">
-<td>hypertension</td>
-<td>Indicates if the patient has hypertension</td>
-<td>Numeric</td>
-<td>0 (No), 1 (Yes)</td>
-</tr>
-<tr class="even">
-<td>heart_disease</td>
-<td>Indicates if the patient has any heart diseases</td>
-<td>Numeric</td>
-<td>0 (No), 1 (Yes)</td>
-</tr>
-<tr class="odd">
-<td>ever_married</td>
-<td>Whether the patient has ever been married</td>
-<td>Numeric</td>
-<td>1 (Yes), 0 (No)</td>
-</tr>
-<tr class="even">
-<td>work_type</td>
-<td>Type of occupation</td>
-<td>Numeric</td>
-<td>1 (Govt_job), 2 (Private), 3 (Self-employed), 4 (Never_worked)</td>
-</tr>
-<tr class="odd">
-<td>Residence_type</td>
-<td>Patient’s area of residence</td>
-<td>Numeric</td>
-<td>1 (Urban), 2 (Rural)</td>
-</tr>
-<tr class="even">
-<td>avg_glucose_level</td>
-<td>Average glucose level in blood</td>
-<td>Numeric</td>
-<td>Range ≈55.12 to 271.74</td>
-</tr>
-<tr class="odd">
-<td>bmi</td>
-<td>Body Mass Index</td>
-<td>Numeric</td>
-<td>Range ≈10.3 to 97.6; converted from character, rounded to 2 decimals</td>
-</tr>
-<tr class="even">
-<td>smoking_status</td>
-<td>Patient’s smoking status</td>
-<td>Numeric</td>
-<td>1 (never smoked), 2 (formerly smoked), 3 (smokes)</td>
-</tr>
-<tr class="odd">
-<td>stroke</td>
-<td>Target Variable: Whether the patient had stroke</td>
-<td>Numeric</td>
-<td>0 (No Stroke), 1 (Stroke)</td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 <section id="analysis-and-results-1" class="slide level2">
 <h2>3. Analysis and Results</h2>
 <h3 id="dataset-visualization"><strong>3.2. Dataset Visualization</strong></h3>
-<p>We can observe from the histograms (a), (b), (c) and (d) the following:</p>
+<p>We can observe from</p>
 <ul>
-<li>The data appears to be slightly imbalanced towards <strong>female</strong> gender but the proportion of stroke cases appears similar for both genders.</li>
-<li>The number of stroke cases increases after the <strong>age</strong> of <span class="math inline">\(\approx 50\)</span> and peaks in the 60 to 80 age range.</li>
-<li>The proportion of stroke cases (blue bar) is visibly much higher in the group with <strong>hypertension</strong>.</li>
-<li>The proportion of stroke cases (blue bar) is visibly much higher in the group with <strong>heart disease</strong>.</li>
+<li></li>
+<li></li>
 </ul>
 </section>
 <section id="analysis-and-results-2" class="slide level2">
@@ -1159,12 +1072,12 @@ Supervisor: Dr. Cohen
 <section id="analysis-and-results-3" class="slide level2">
 <h2>3. Analysis and Results</h2>
 <h3 id="dataset-visualization-2"><strong>3.2. Dataset Visualization</strong></h3>
-<p>We can observe from the histograms (e), (f), (g) and (h) the following:</p>
+<p>We can observe from the</p>
 <ul>
-<li>Having been married being associated with a higher stroke risk in this dataset is possibly due to the married group skewing toward older ages.</li>
-<li><strong>Self-employed</strong> individuals appear to have the highest risk proportion among the working groups. Most likelly due lack of access to healtcare or benefits.</li>
-<li><strong>residence type</strong> does not appear to be a significant factor for stroke risk.</li>
-<li><strong>high average glucose (HbA1c) level is a significant risk factor</strong> for stroke.</li>
+<li></li>
+<li></li>
+<li>** type**</li>
+<li><strong>high average significant risk factor</strong></li>
 </ul>
 </section>
 <section class="slide level2">
@@ -1175,11 +1088,9 @@ Supervisor: Dr. Cohen
 <section id="analysis-and-results-4" class="slide level2">
 <h2>3. Analysis and Results</h2>
 <h3 id="dataset-visualization-5"><strong>3.2. Dataset Visualization</strong></h3>
-<p>We can observe from the histograms (i) and (j) the following:</p>
-<ul>
-<li>The patient population (pink bars) falls within the overweight to obese range (BMI <span class="math inline">\(\approx 25\)</span> to <span class="math inline">\(35\)</span>). But the proportion of stoke outcome is a lot smaller within the healthy BMI range.</li>
-<li>The highest proportional risk of stroke appears to be in the <strong>formerly smoked</strong> group. This finding is common in medical literature</li>
-</ul>
+</section>
+<section id="we-can-observe-from-the" class="slide level2">
+<h2>We can observe from the</h2>
 </section>
 <section id="analysis-and-results-5" class="slide level2">
 <h2>3. Analysis and Results</h2>
@@ -1187,116 +1098,12 @@ Supervisor: Dr. Cohen
 </section>
 <section id="statistical-modelling" class="slide level2">
 <h2>3. Statistical Modelling</h2>
-<p>There is an massive increase in the <span class="math inline">\(\chi^2\)</span> values which demonstrates that the oversampling technique has significantly increased the statistical power of the model.</p>
-<table class="caption-top">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 28%">
-<col style="width: 29%">
-<col style="width: 22%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Factor</th>
-<th>LR χ² (Original, anova2)</th>
-<th>LR χ² (Balanced, anova3)</th>
-<th>Change in χ²</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>age</td>
-<td>120.407</td>
-<td>1201.85</td>
-<td>≈10.0× Increase</td>
-</tr>
-<tr class="even">
-<td>hypertension</td>
-<td>18.205</td>
-<td>154.34</td>
-<td>≈8.5× Increase</td>
-</tr>
-<tr class="odd">
-<td>avg_glucose_level</td>
-<td>11.337</td>
-<td>69.73</td>
-<td>≈6.1× Increase</td>
-</tr>
-</tbody>
-</table>
 </section>
 <section id="statistical-modelling-1" class="slide level2">
 <h2>3. Statistical Modelling</h2>
-<div style="font-size: 0.7em">
-<ul>
-<li><p>The imbalanced models achieved high Accuracy (<span class="math inline">\(\approx 94.5\%\)</span>) and Specificity (<span class="math inline">\(\approx 0.998\)</span>), but are practically useless for stroke prediction with a near-zero Sensitivity and missing almost all actual stroke cases.</p></li>
-<li><p>Model 3 which utilized oversampling to address the severe class imbalance in stroke outcome, demonstrated a significant improvement in predictive capability: Sensitivity dramatically improved to <span class="math inline">\(0.6481\)</span> being able to identifying 35 True Positives.</p></li>
-</ul>
-<table class="caption-top">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 25%">
-<col style="width: 28%">
-<col style="width: 26%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Metric</th>
-<th>Model 1 (Full, Imbalanced)</th>
-<th>Model 2 (Reduced, Imbalanced)</th>
-<th>Model 3 (Reduced, Balanced)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Accuracy</td>
-<td>0.94538</td>
-<td>0.9444</td>
-<td>0.7269</td>
-</tr>
-<tr class="even">
-<td>Sensitivity (Recall)</td>
-<td>0.01852</td>
-<td>0.0000</td>
-<td>0.6481</td>
-</tr>
-<tr class="odd">
-<td>Specificity</td>
-<td>0.99790</td>
-<td>0.9979</td>
-<td>0.7314</td>
-</tr>
-<tr class="even">
-<td>True Positives (TP)</td>
-<td>1</td>
-<td>0</td>
-<td>35</td>
-</tr>
-<tr class="odd">
-<td>False Negatives (FN)</td>
-<td>2</td>
-<td>2</td>
-<td>256</td>
-</tr>
-<tr class="even">
-<td>True Negatives (TN)</td>
-<td>951</td>
-<td>951</td>
-<td>697</td>
-</tr>
-<tr class="odd">
-<td>False Positives (FP)</td>
-<td>53</td>
-<td>54</td>
-<td>19</td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 <section id="conclusion" class="slide level2">
 <h2>4. Conclusion</h2>
-<p>Logistic Regression althought being a very simple and interpretable baseline model for stroke risk prediction. During the project we were able to evaluate its weaknesses when analysing a heavily</p>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
 <h2>References</h2>
