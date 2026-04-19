@@ -41,12 +41,9 @@ nocite: |
 
 ## 2. Methodology: {.smaller.scrollable}
 ### **2.1 LightGBM** {.smaller}
-
 * LightGBM (Light Gradient Boosting Machine) is a predictive analytics algorithm employed to perform predictive modeling tasks, such as regression and classification.
 * The algorithm operates on the principle of gradient boosting, whereby numerous decision trees are constructed sequentially, with each successive tree refining the mistakes made by the previous one.
-
 $$\mathcal{L} = \sum_{i=1}^{n} l(y_i, \hat{y}_i) + \Omega(f)$$
-
 * $l(y_i, \hat{y}_i)$ - Determines the difference between the real value and the predicted one
 * $\Omega(f)$ - Term of regularization which determines the model’s complexity and avoids the occurrence of overfitting, $n$ - Training sample number
 * This is where the loss due to predicting is summed up with a penalty term to manage the complexity of the model. Optimizing this function, the LightGBM algorithm maximizes its prediction accuracy without causing overfitting.
