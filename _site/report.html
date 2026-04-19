@@ -195,7 +195,6 @@ window.Quarto = {
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
     <a href="https://github.com/supriyasathe/IDC6940_LightGBM-agentic-ai-credit-risk" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
-  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -1616,7 +1615,7 @@ Figure&nbsp;1: Distribution of Loan Amounts
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/supriyasathe\.github\.io\/IDC6940_Explainable-LightGBM-credit-risk\/");
+        var filterRegex = new RegExp('/' + window.location.host + '/');
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
