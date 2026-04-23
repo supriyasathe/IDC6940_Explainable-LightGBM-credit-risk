@@ -345,7 +345,7 @@ The SHAP approach is capable of revealing the impact of each variable on the pre
 
 ## 4. Modeling Result
 ### **4.4. SHAP Analysis of Fine-Tuned Model** 
-The SHAP summary graph indicates that loan amounts and income are among the most influential features for predicting credit risk. Values depicted in navy blue indicate a higher risk, whereas those in blue indicate lower risk.
+The SHAP summary plot shows the importance of features that affect loan approval. The features that have the highest influence on the predictions are the ones with the greatest SHAP value.
 ```{python}
 #| label: fig-shap-analysis
 #| echo: false
